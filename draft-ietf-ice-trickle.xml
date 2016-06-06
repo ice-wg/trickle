@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-latest'>
+     docName='draft-ietf-ice-trickle-02'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -58,10 +58,10 @@
       </address>
     </author>
     <author initials="P." surname="Saint-Andre" fullname="Peter Saint-Andre">
-      <organization>&amp;yet</organization>
+      <organization>Filament</organization>
       <address>
-        <email>peter@andyet.com</email>
-        <uri>https://andyet.com/</uri>
+        <email>peter@filament.com</email>
+        <uri>https://filament.com/</uri>
       </address>
     </author>
     <date />
@@ -561,20 +561,20 @@
           <artwork>
 <![CDATA[
   v=0
-  o=jdoe 2890844526 2890842807 IN IP4 10.0.1.1
+  o=jdoe 2890844526 2890842807 IN IP6 2001:db8:a0b:12f0::1
   s=
-  c=IN IP4 10.0.1.1
+  c=IN IP4 2001:db8:a0b:12f0::1
   t=0 0
   a=ice-pwd:asd88fgpdd777uzjYhagZg
   a=ice-ufrag:8hhY
   m=audio 5000 RTP/AVP 0
   a=rtpmap:0 PCMU/8000
-  a=candidate:1 1 UDP 2130706431 10.0.1.1 5000 typ host
-  a=candidate:1 2 UDP 2130706431 10.0.1.1 5001 typ host
-  a=candidate:2 1 UDP 1694498815 192.0.2.3 5000 typ srflx
-      raddr 10.0.1.1 rport 8998
-  a=candidate:2 2 UDP 1694498815 192.0.2.3 5001 typ srflx
-      raddr 10.0.1.1 rport 8998
+  a=candidate:1 1 UDP 2130706431 2001:db8:a0b:12f0::1 5000 typ host
+  a=candidate:1 2 UDP 2130706431 2001:db8:a0b:12f0::1 5001 typ host
+  a=candidate:2 1 UDP 1694498815 2001:db8:a0b:12f0::3 5000 typ srflx
+      raddr 2001:db8:a0b:12f0::1 rport 8998
+  a=candidate:2 2 UDP 1694498815 2001:db8:a0b:12f0::3 5001 typ srflx
+      raddr 2001:db8:a0b:12f0::1 rport 8998
 ]]>
           </artwork>
         </figure>
@@ -992,7 +992,28 @@
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
       <?rfc include="reference.I-D.keranen-mmusic-ice-address-selection"?>
-      <?rfc include="reference.I-D.ietf-mmusic-trickle-ice-sip"?>
+<reference anchor='I-D.ietf-mmusic-trickle-ice-sip'>
+<front>
+<title>A Session Initiation Protocol (SIP) usage for Trickle ICE</title>
+<author initials='E' surname='Ivov' fullname='Emil Ivov'>
+    <organization />
+</author>
+<author initials='T' surname='Thomas' fullname='Thomas'>
+    <organization />
+</author>
+<author initials='E' surname='Marocco' fullname='Enrico Marocco'>
+    <organization />
+</author>
+<author initials='C' surname='Holmberg' fullname='Christer Holmberg'>
+    <organization />
+</author>
+<date month='May' day='17' year='2016' />
+<abstract><t>The Interactive Connectivity Establishment (ICE) protocol describes a Network Address Translator (NAT) traversal mechanism for UDP-based multimedia sessions established with the Offer/Answer model.  The ICE extension for Incremental Provisioning of Candidates (Trickle ICE) defines a mechanism that allows ICE agents to shorten session establishment delays by making the candidate gathering and connectivity checking phases of ICE non-blocking and by executing them in parallel.  This document defines usage semantics for Trickle ICE with the Session Initiation Protocol (SIP).</t></abstract>
+</front>
+<seriesInfo name='Internet-Draft' value='draft-ietf-mmusic-trickle-ice-sip-04' />
+<format type='TXT'
+        target='http://www.ietf.org/internet-drafts/draft-ietf-mmusic-trickle-ice-sip-04.txt' />
+</reference>
       <reference anchor="XEP-0176">
         <front>
           <title>XEP-0176: Jingle ICE-UDP Transport Method</title>
@@ -1091,15 +1112,15 @@
             <xref target="RFC1918"/> block.
           </t>
           <t>
-            Alice sends Bob the candidate 10.0.0.10 which also happens
+            Alice sends Bob the candidate 2001:db8:a0b:12f0::10 which also happens
             to correspond to an existing host on Bob's network.
           </t>
           <t>
-            Bob creates a check list consisting solely of 10.0.0.10 and
+            Bob creates a check list consisting solely of 2001:db8:a0b:12f0::10 and
             starts checks.
           </t>
           <t>
-            These checks reach the host at 10.0.0.10 in Bob's network,
+            These checks reach the host at 2001:db8:a0b:12f0::10 in Bob's network,
             which responds with an ICMP "port unreachable" error and per
             <xref target="rfc5245bis"/> Bob marks the transaction as
             Failed.
@@ -1209,6 +1230,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-01'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Changed examples to use IPv6.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-00'>
         <t>
           <list style='symbols'>
