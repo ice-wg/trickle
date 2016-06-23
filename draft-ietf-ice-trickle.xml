@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-02'>
+     docName='draft-ietf-ice-trickle-03'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -386,10 +386,13 @@
         <t>
           A Trickle ICE agent MUST initially consider all check lists to be
           frozen.  It then inspects the first check list and
-          attempts to unfreeze all candidates belonging to the first
+          attempts to unfreeze all candidates 
+          it has received so far that belong to the first
           component on the first media stream (i.e., the first media
           stream that was reported to the ICE implementation from the
-          using application). However, if this check list is still empty,
+          using application). 
+          This implies that 
+          However, if this check list is still empty,
           an agent delays further processing until the check list is
           non-empty.
         </t>
@@ -991,7 +994,6 @@
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
-      <?rfc include="reference.I-D.keranen-mmusic-ice-address-selection"?>
 <reference anchor='I-D.ietf-mmusic-trickle-ice-sip'>
 <front>
 <title>A Session Initiation Protocol (SIP) usage for Trickle ICE</title>
@@ -1133,11 +1135,10 @@
       <t>
         A similar race condition would occur if the initial offer from
         Alice only contains candidates that can be determined as
-        unreachable (per
-        <xref target="I-D.keranen-mmusic-ice-address-selection"/>) from
-        any of the candidates that Bob has gathered. This would be the
+        unreachable from
+        any of the candidates that Bob has gathered (e.g., this would be the
         case if Bob's candidates only contain IPv4 addresses and the
-        first candidate that he receives from Alice is an IPv6 one.
+        first candidate that he receives from Alice is an IPv6 one).
       </t>
       <t>
         Another potential problem could arise when a non-trickle
@@ -1230,6 +1231,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-02'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Adjusted unfreezing behavior when there are disparate foundations.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-01'>
         <t>
           <list style='symbols'>
