@@ -385,14 +385,11 @@
         </t>
         <t>
           A Trickle ICE agent MUST initially consider all check lists to be
-          frozen.  It then inspects the first check list and
-          attempts to unfreeze all candidates 
-          it has received so far that belong to the first
+          frozen.  It then inspects the first check list and attempts to 
+          unfreeze all candidates it has received so far that belong to the first
           component on the first media stream (i.e., the first media
           stream that was reported to the ICE implementation from the
-          using application). 
-          This implies that 
-          However, if this check list is still empty,
+          using application). If however, this check list is still empty,
           an agent delays further processing until the check list is
           non-empty.
         </t>
@@ -638,8 +635,26 @@
           server reflexive candidate MUST be replaced by its base before
           adding the pair to the list. Once this is done, the agent
           examines the check list looking for another pair that would be
-          redundant with the new one. If such a pair exists, the newly
-          formed pair is ignored.
+          redundant with the new one. If such a pair exists and its type 
+          is not peer reflexive, the pair with the higher priority is kept 
+          and the one with the lower priority is discarded. If, on the 
+          other hand, the type of the pre-existing pair is peer reflexive, 
+          the agent must replace it with the new candidate it received, 
+          regardless of their priority.
+        </t>
+        <t>
+          <list style='empty'>
+            <t>
+          Note: Replacing pre-existing pairs with seemingly equivalent 
+          higher-priority ones helps guarantee that both agents will have 
+          the same view of candidate priorities. This is particularly 
+          important during aggressive nomination, when priority is sometimes 
+          the only way a controlled agent can determine the selected pair.
+          It is for that same reason that peer-reflexive candidates need to
+          always be updated if equivalent alternatives are received through
+          signalling.
+            </t>
+          </list>
         </t>
         <t>
           For all other pairs, including those with a server reflexive
@@ -967,7 +982,14 @@
     </section>
     <section title='Acknowledgements'>
       <t>
-        The authors would like to thank Bernard Aboba, 
+        The authors would like to thank Taylor Brandstetter for 
+        identifying the need to replace pre-existing peer-reflexive 
+        candidates with higher-priority ones received from trickling 
+        and the fact that not doing so could break aggressive 
+        nomination.
+     <t>
+     </t>   
+        The authors would also like to thank Bernard Aboba, 
         Flemming Andreasen, Rajmohan Banavi, Christer Holmberg, 
         Jonathan Lennox, Enrico Marocco, Pal Martinsen, 
         Martin Thomson, Dale R. Worley, and Brandon Williams 
