@@ -540,8 +540,15 @@
         delayed updates for a previous session can be recognized as such
         and ignored by the receiving party.  For example, applications
         that choose to signal candidates via SDP may include a ufrag value in
-        the SDP that represents candidates (such as "a=candidate ... ufrag
-        abc"). Or as another exmaple, WebRTC implementations may include a ufrag
+        the SDP that represents candidates such as:
+        <figure>
+          <artwork>
+<![CDATA[
+  a=candidate:1 1 UDP 2130706431 2001:db8::1 5000 typ host ufrag 8hhY
+]]>
+          </artwork>
+        </figure>
+        Or as another exmaple, WebRTC implementations may include a ufrag
         in the JavaScript objects that represent candidates.
       </t>
       <t>
