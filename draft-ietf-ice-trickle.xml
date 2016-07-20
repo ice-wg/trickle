@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-03'>
+     docName='draft-ietf-ice-trickle-04'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -20,16 +20,16 @@
     </title>
     <author initials='E.' surname='Ivov'
             fullname='Emil Ivov'>
-      <organization abbrev='Jitsi'>Jitsi</organization>
+      <organization abbrev='Atlassian'>Atlassian</organization>
       <address>
         <postal>
-          <street></street>
-          <city>Strasbourg</city>
-          <code>67000</code>
-          <country>France</country>
+          <street>303 Colorado St#1600</street>
+          <city>Austin</city>
+          <code>78701</code>
+          <country>USA</country>
         </postal>
-        <phone>+33 6 72 81 15 55</phone>
-        <email>emcho@jitsi.org</email>
+        <phone>+1-512-640-3000</phone>
+        <email>eivov@atlassian.com</email>
       </address>
     </author>
     <author fullname="Eric Rescorla" initials="E.K." surname="Rescorla">
