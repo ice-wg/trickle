@@ -384,14 +384,16 @@
           </list>
         </t>
         <t>
-          A Trickle ICE agent MUST initially consider all check lists to be
+          A Trickle ICE agent initially considers all check lists to be
           frozen.  It then inspects the first check list and attempts to 
-          unfreeze all candidates it has received so far that belong to the first
-          component on the first media stream (i.e., the first media
+          unfreeze all candidates it has received so far that belong to the 
+          first component on the first media stream (i.e., the first media
           stream that was reported to the ICE implementation from the
-          using application). If however, this check list is still empty,
-          an agent delays further processing until the check list is
-          non-empty.
+          using application). If that first component of the first media stream
+          does not contain candidates for one or more of the currently known 
+          pair foundations, and if candidate pairs already exist for that 
+          foundation in one of the following components or media streams, then 
+          the agent unfreezes the first of those.
         </t>
         <t>
           With regard to pruning of duplicate candidate pairs, a Trickle ICE
