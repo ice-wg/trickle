@@ -14,7 +14,10 @@
 <?rfc compact='yes' ?>
   <front>
 
-    <title abbrev='Trickle ICE'>Trickle ICE: Incremental Provisioning of Candidates for the Interactive Connectivity Establishment (ICE) Protocol</title>
+    <title abbrev='Trickle ICE'>
+        Trickle ICE: Incremental Provisioning of Candidates for the Interactive 
+        Connectivity Establishment (ICE) Protocol
+    </title>
     <author initials='E.' surname='Ivov'
             fullname='Emil Ivov'>
       <organization abbrev='Jitsi'>Jitsi</organization>
@@ -989,8 +992,8 @@
         candidates with higher-priority ones received from trickling 
         and the fact that not doing so could break aggressive 
         nomination.
-     <t>
-     </t>   
+     </t>
+     <t>   
         The authors would also like to thank Bernard Aboba, 
         Flemming Andreasen, Rajmohan Banavi, Christer Holmberg, 
         Jonathan Lennox, Enrico Marocco, Pal Martinsen, 
