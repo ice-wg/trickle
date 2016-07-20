@@ -638,14 +638,16 @@
         <t>
           If the new pair's local candidate is server reflexive, the
           server reflexive candidate MUST be replaced by its base before
-          adding the pair to the list. Once this is done, the agent
-          examines the check list looking for another pair that would be
-          redundant with the new one. If such a pair exists and its type 
-          is not peer reflexive, the pair with the higher priority is kept 
-          and the one with the lower priority is discarded. If, on the 
-          other hand, the type of the pre-existing pair is peer reflexive, 
-          the agent must replace it with the new candidate it received, 
-          regardless of their priority.
+          adding the pair to the list. 
+        </t>
+        <t>
+          Once this is done, the agent examines the check list looking for 
+          another pair that would be redundant with the new one. If such a 
+          pair exists and its type is not peer reflexive, the pair with the 
+          higher priority is kept and the one with the lower priority is 
+          discarded. If, on the other hand, the type of the pre-existing 
+          pair is peer reflexive, the agent MUST replace it with the new 
+          candidate it received, regardless of their priorities.
         </t>
         <t>
           <list style='empty'>
