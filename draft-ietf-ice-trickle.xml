@@ -23,7 +23,7 @@
       <organization abbrev='Atlassian'>Atlassian</organization>
       <address>
         <postal>
-          <street>303 Colorado St#1600</street>
+          <street>303 Colorado Street, #1600</street>
           <city>Austin</city>
           <code>78701</code>
           <country>USA</country>
@@ -600,7 +600,7 @@
         RTCP server reflexive candidate.
       </t>
       <t>
-        Note that the order restriction only applies among candidates
+        Note: The order restriction only applies among candidates
         that belong to the same foundation.
       </t>
       <t>
@@ -647,7 +647,11 @@
           higher priority is kept and the one with the lower priority is 
           discarded. If, on the other hand, the type of the pre-existing 
           pair is peer reflexive, the agent MUST replace it with the new 
-          candidate it received, regardless of their priorities.
+          candidate it received (regardless of their respective priorities);
+          this is done by setting the priority of the new candidate to the 
+          priority of the pre-existing candidate (thus ensuring that both 
+          parties have consistent priorities) and then resorting the 
+          check list.
         </t>
         <t>
           <list style='empty'>
@@ -887,6 +891,11 @@
             mechanisms.
           </t>
         </list>
+      </t>
+      <t>
+        Note: It is the responsiblity of the signaling protocol to 
+        properly indicate which ufrag in force so that both parties 
+        have a consistent view of which candidates are paired.
       </t>
     </section>
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
