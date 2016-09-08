@@ -554,12 +554,11 @@
         in the JavaScript objects that represent candidates.
       </t>
       <t>
-        Note: It is the responsiblity of the signaling protocol to 
-        properly indicate which ICE negotiation session is in force 
-        (i.e., by communicating the relevant ufrag) so that both parties 
-        have a consistent view of which candidates are paired.  This is
-        especially important in the case of ICE restarts (see 
-        <xref target='subsequent.oa'/>).
+        Note: The signaling protocol needs to provide a mechanism for both
+        parties to indicate and agree on the ICE negotiation session (ufrag)
+        in force so that they have a consistent view of which candidates are
+        to be paired.  This is especially important in the case of ICE
+        restarts (see <xref target='subsequent.oa'/>).
       </t>
       <t>
         One important aspect of Vanilla ICE is that connectivity checks
