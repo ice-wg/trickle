@@ -76,7 +76,7 @@
         exchanging complete lists. With such incremental provisioning,
         ICE agents can begin connectivity checks while they are still
         gathering candidates and considerably shorten the time necessary
-        for ICE processing to complete. This mechanism is called "trickle 
+        for ICE processing to complete. This mechanism is called "Trickle 
         ICE".
       </t>
     </abstract>
@@ -111,7 +111,7 @@
       </t>
       <t>
         These factors can lead to relatively lengthy session
-        establishment times and degraded user experience.
+        establishment times and thus to a degraded user experience.
       </t>
       <t>
         This document defines an alternative mode of
@@ -150,7 +150,7 @@
       </t>
       <t>
         This specification does not define the usage of Trickle ICE with any
-        specific signalling protocol (however, see 
+        specific signaling protocol (however, see 
         <xref target="I-D.ietf-mmusic-trickle-ice-sip"/> for usage with SIP
         <xref target='RFC3261'/>).
         Similarly, it does not define Trickle ICE in
@@ -178,7 +178,7 @@
             The Interactive Connectivity Establishment protocol as
             defined in <xref target="rfc5245bis"/>. 
           </t>
-          <t hangText="Candidate Harvester:">
+          <t hangText="Candidate Gatherer:">
             A module used by an ICE agent to obtain local candidates.
             Candidate gatherers use different mechanisms for
             discovering local candidates. Some of them would typically
@@ -205,8 +205,8 @@
             answerers to still gather candidates and perform
             connectivity checks in a non-blocking way, thus roughly
             offering "half" the advantages of Trickle ICE. The mechanism
-            is mostly meant for use in cases where support for trickle
-            ICE cannot be confirmed prior to sending a initial offer.
+            is mostly meant for use in cases where support for Trickle
+            ICE cannot be confirmed prior to sending an initial offer.
           </t>
           <t hangText="Full Trickle:">
             The regular mode of operation for Trickle ICE agents, in which
@@ -254,7 +254,7 @@
         Trickle ICE MUST include a token of "trickle" in the 
         ice-options attribute every time it generates an offer or an answer. 
         This enables an agent that receives offers or answers to verify 
-        support by checking for presence of the token. 
+        support by checking for inclusion of the token. 
       </t>
       <t>
         Dedicated discovery semantics and half trickle are needed
@@ -302,7 +302,7 @@
       </t>
       <t>
         Methods for calculating priorities and foundations, as well as 
-        determining redundancy of candidates, work just as with vanilla
+        determining redundancy of candidates, work just as with Vanilla
         ICE.
       </t>
     </section>
@@ -329,7 +329,7 @@
       <t>
         If the offer does indicate support for Trickle ICE, the agent
         will determine its role, start gathering and prioritizing
-        candidates and while doing so it will also respond by sending
+        candidates; while doing so, it will also respond by sending
         its own answer, so that both agents can start forming check
         lists and begin connectivity checks.
       </t>
@@ -423,9 +423,9 @@
     <section title='Performing Connectivity Checks' >
       <t>
         For the most part, Trickle ICE agents perform connectivity
-        checks following Vanilla ICE procedures. However, the
-        asynchronous nature of gathering and communicating candidates 
-        in Trickle ICE impose a number of changes described as
+        checks following Vanilla ICE procedures. However, the fact that
+        gathering and communicating candidates is asynchronous 
+        in Trickle ICE imposes a number of changes as
         described in the following sections.
       </t>
       <section title="Scheduling Checks" anchor="scheduling-checks">
@@ -433,7 +433,7 @@
           The ICE specification <xref target='rfc5245bis'/>, Section 5.8, 
           requires that agents terminate the timer for a triggered 
           check in relation to an active check list once the agent
-          has exhausted all frozen pairs in check list.  This will
+          has exhausted all frozen pairs in the check list.  This will
           not work with Trickle ICE, because more pairs will be
           added to the check list incrementally.
         </t>
@@ -522,7 +522,7 @@
       <t>
         Next the agent sends (i.e., trickles) the newly discovered
         candidate(s) to the remote agent. The actual delivery of the new
-        candidates are specified by using protocols such as SIP or XMPP.
+        candidates is handled by signaling protocols such as SIP or XMPP.
         Trickle ICE imposes no restrictions on the way this is done or
         whether it is done at all. For example, some applications may
         choose not to send trickle updates for server reflexive
@@ -550,8 +550,16 @@
 ]]>
           </artwork>
         </figure>
-        Or as another exmaple, WebRTC implementations may include a ufrag
+        Or as another example, WebRTC implementations may include a ufrag
         in the JavaScript objects that represent candidates.
+      </t>
+      <t>
+        Note: It is the responsiblity of the signaling protocol to 
+        properly indicate which ICE negotiation session is in force 
+        (i.e., by communicating the relevant ufrag) so that both parties 
+        have a consistent view of which candidates are paired.  This is
+        especially important in the case of ICE restarts (see 
+        <xref target='subsequent.oa'/>).
       </t>
       <t>
         One important aspect of Vanilla ICE is that connectivity checks
@@ -559,7 +567,7 @@
         simultaneously by both agents, so that any firewalls or NATs
         fronting the agents would whitelist both endpoints and allow
         all except for the first ("suicide") packets to go through. This
-        is also crucial to unfreezing candidates in the right time.
+        is also crucial to unfreezing candidates at the right time.
       </t>
       <t>
         In order to preserve this feature in Trickle ICE, when trickling
@@ -624,7 +632,7 @@
       <section title='Pairing Newly Learned Candidates and Updating
                       Check Lists' anchor="cand-pairing">
         <t>
-          Forming candidate pairs works the way it is described by
+          Forming candidate pairs works as described in
           the ICE specification <xref target='rfc5245bis'/>. 
           However, actually adding the new pair to
           a check list happens according to the rules
@@ -649,8 +657,7 @@
           pair is peer reflexive, the agent MUST replace it with the new 
           candidate it received (regardless of their respective priorities);
           this is done by setting the priority of the new candidate to the 
-          priority of the pre-existing candidate (thus ensuring that both 
-          parties have consistent priorities) and then resorting the 
+          priority of the pre-existing candidate and then re-sorting the 
           check list.
         </t>
         <t>
@@ -663,7 +670,7 @@
           the only way a controlled agent can determine the selected pair.
           It is for that same reason that peer-reflexive candidates need to
           always be updated if equivalent alternatives are received through
-          signalling.
+          signaling.
             </t>
           </list>
         </t>
@@ -693,7 +700,7 @@
                 </t>
                 <t hangText="Waiting: ">
                   if the list contains no pairs with the same foundation
-                  as the new one, or, in case such pairs exist but they
+                  as the new one, or in case such pairs exist but they
                   are all in either the Succeeded or Failed states.
                 </t>
               </list>
@@ -705,9 +712,9 @@
              anchor="end-of-candidates">
       <t>
         Once all candidate gathering is completed or expires for a 
-        specific media stream, the agents will generate an
+        specific media stream, the agent will generate an
         "end-of-candidates" indication for that stream and send it to
-        the remote agent via the signalling channel. The exact form of
+        the remote agent via the signaling channel. The exact form of
         the indication depends on the application protocol. The
         indication can be sent in the following ways:
         <list style='symbols'>
@@ -715,7 +722,7 @@
              half trickle initial offers)</t>
           <t>Along with the last candidate an agent can send for a stream</t>
           <t>As a standalone notification (e.g., after STUN Binding requests 
-             or TURN Allocate requests to a server timeout and the agent has 
+             or TURN Allocate requests to a server time out and the agent has 
              no other active gatherers)</t>
         </list>
       </t>
@@ -735,7 +742,7 @@
         controlled agents up-to-date on the state of ICE processing.
       </t>
       <t>
-        When sending an end-of-candidate indication during trickling
+        When sending an end-of-candidates indication during trickling
         (rather than as a part of an offer or an answer), 
         it is the responsibility of the
         using protocol to define methods for relating the
@@ -748,7 +755,7 @@
         processing has failed. It also enables agents to speed up the
         conclusion of ICE processing when a candidate pair has been validated
         but it involves the use of lower-preference transports such as
-        TURN. In such situations, an implementations may choose to wait
+        TURN. In such situations, an implementation may choose to wait
         and see if higher-priority candidates are received; in this case
         the end-of-candidates indication provides a notificaiton that such
         candidates are not forthcoming.
@@ -758,7 +765,7 @@
         indication before candidate gathering has actually completed, if the
         agent determines that gathering has continued for more than an
         acceptable period of time. However, an agent MUST NOT send any
-        more candidates after it has send an end-of-candidates
+        more candidates after it has sent an end-of-candidates
         indication.
       </t>
       <t>
@@ -780,15 +787,16 @@
         After an agent has received an end-of-candidates indication, it 
         MUST also ignore any newly received candidates for that media 
         stream or media session. Therefore, adding new candidates to the 
-        negotiation is possible only through an ICE restart.
+        negotiation is possible only through an ICE restart (see
+        <xref target='subsequent.oa'/>).
       </t>
       <t>
         This specification does not
         override Vanilla ICE semantics for concluding ICE processing.
-        Therefore even if end-of-candidates indications are sent
+        Therefore, even if end-of-candidates indications are sent,
         agents will still have to go through pair nomination. Also, if
         pairs have been nominated for components and media streams, ICE
-        processing will still conclude even if end-of-candidate
+        processing will still conclude even if end-of-candidates
         indications have not been received for all streams.
       </t>
       </section>
@@ -796,7 +804,7 @@
     <section title='Receiving Additional Remote Candidates'
              anchor="recv-trickling">
       <t>
-        At any point of ICE processing, a Trickle ICE agent may receive
+        At any time during ICE processing, a Trickle ICE agent may receive
         new candidates from the remote agent. When this happens and no
         local candidates are currently known for this same stream, the
         new remote candidates are simply added to the list of remote
@@ -823,7 +831,7 @@
         for a specific check list, it will update the state of the 
         check list as per
         <xref target="state-updates"/>. If the check list is still 
-        active state after the update, the agent will persist the
+        in the Active state after the update, the agent will persist 
         the fact that an end-of-candidates indication has been
         received and take it into account in future updates
         to the check list.
@@ -832,7 +840,7 @@
     <section title="Trickle ICE and Peer Reflexive Candidates">
       <t>
         Even though Trickle ICE does not explicitly modify the
-        procedures for handling peer reflexive candidates, their
+        procedures for handling peer-reflexive candidates, their
         processing could be impacted in implementations. With Trickle
         ICE, it is possible that server reflexive candidates can be
         discovered as peer reflexive in cases where incoming
@@ -849,7 +857,7 @@
         trickle server reflexive candidates to entities that are known
         to be publicly accessible and where sending a direct STUN
         binding request is likely to reach the destination faster than
-        the trickle update that travels through the signalling path.
+        the trickle update that travels through the signaling path.
       </t>
     </section>
     <section title='Concluding ICE Processing'
@@ -891,11 +899,6 @@
             mechanisms.
           </t>
         </list>
-      </t>
-      <t>
-        Note: It is the responsiblity of the signaling protocol to 
-        properly indicate which ufrag in force so that both parties 
-        have a consistent view of which candidates are paired.
       </t>
     </section>
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
@@ -954,7 +957,7 @@
         necessarily have a way of distinguishing between call
         intentions and other user activity. In such cases, using full
         trickle is most likely to result in an ideal user experience.
-        Even so, using half trickle would be an improvement over vanilla
+        Even so, using half trickle would be an improvement over Vanilla
         ICE because it would result in a better experience for answerers.
       </t>
     </section>
@@ -993,7 +996,7 @@
       <t>
         This specification inherits most of its semantics from
         <xref target="rfc5245bis"/> and as a result all security
-        considerations described there remain the same.
+        considerations described there apply to Trickle ICE.
       </t>
     </section>
     <section title='Acknowledgements'>
@@ -1195,7 +1198,7 @@
         following case:
         <list style='numbers'>
           <t>
-            Alice's client has a non-Trickle ICE implementation
+            Alice's client has a non-Trickle ICE implementation.
           </t>
           <t>
             Bob's client has support for Trickle ICE.
@@ -1206,7 +1209,7 @@
           </t>
           <t>
             Bob has two STUN servers but one of them is currently
-            unreachable
+            unreachable.
           </t>
         </list>
       </t>
@@ -1229,7 +1232,7 @@
         is hence provided only for informational purposes.
       </t>
       <t>
-        Such an agent would generate offers or
+        An ICE lite agent would generate offers or
         answers as per <xref target="rfc5245bis"/>. Both its offers and 
         answers will indicate support for Trickle ICE. Given
         that they will contain a complete set of candidates (the agent's
@@ -1243,7 +1246,7 @@
         identifies the remote agent as an ICE lite implementation, the
         offerer may choose to not send any additional
         candidates. The same is also true in the case when the ICE lite
-        agent is making the offer and the full ICE one is answering. In
+        agent is making the offer and the full ICE agent is answering. In
         these cases the connectivity checks would be enough for the ICE
         lite implementation to discover all potentially useful
         candidates as peer reflexive. The following example illustrates
@@ -1399,7 +1402,7 @@
             <t>
               Added wording that explicitly states ICE lite agents
               have to be prepared to receive no candidates over
-              signalling and that they should not freak out if this
+              signaling and that they should not freak out if this
               happens. (Closed the corresponding open issue).
             </t>
             <t>
