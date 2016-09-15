@@ -555,8 +555,9 @@
       </t>
       <t>
         Note: The signaling protocol needs to provide a mechanism for both
-        parties to indicate and agree on the ICE negotiation session (ufrag)
-        in force so that they have a consistent view of which candidates are
+        parties to indicate and agree on the ICE negotiation session in force
+        (as identified by the ufrag)
+        so that they have a consistent view of which candidates are
         to be paired.  This is especially important in the case of ICE
         restarts (see <xref target='subsequent.oa'/>).
       </t>
