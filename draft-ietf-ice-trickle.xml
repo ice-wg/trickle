@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-04'>
+     docName='draft-ietf-ice-trickle-05'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -651,13 +651,14 @@
         <t>
           Once this is done, the agent examines the check list looking for 
           another pair that would be redundant with the new one. If such a 
-          pair exists and its type is not peer reflexive, the pair with the 
-          higher priority is kept and the one with the lower priority is 
-          discarded. If, on the other hand, the type of the pre-existing 
-          pair is peer reflexive, the agent MUST replace it with the new 
-          candidate it received (regardless of their respective priorities);
-          this is done by setting the priority of the new candidate to the 
-          priority of the pre-existing candidate and then re-sorting the 
+          pair exists and the of its remote candidate is not peer reflexive, 
+          the pair with the higher priority is kept and the one with the 
+          lower priority is discarded. If, on the other hand, the type of 
+          the remote canidate in the pre-existing pair is peer reflexive, 
+          the agent MUST replace it with the new candidate it received 
+          (regardless of their respective priorities); this is done by 
+          setting the priority of the new candidate to the priority of the 
+          pre-existing candidate and then re-sorting the 
           check list.
         </t>
         <t>
