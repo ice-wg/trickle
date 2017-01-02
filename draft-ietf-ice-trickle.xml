@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-05'>
+     docName='draft-ietf-ice-trickle-07'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -348,9 +348,7 @@
           check lists and performing connectivity checks.
         </t>
         <t>
-          In application protocols that use SDP, 
-          the answer MUST indicate support for Trickle ICE as described
-          in <xref target="disco"/>.
+          In application protocols that use SDP, the answer MUST indicate support for Trickle ICE as described in <xref target="disco"/>.
         </t>
       </section>
       <section title="Forming Check Lists and Beginning Connectivity
@@ -375,18 +373,6 @@
           pairs.
         </t>
         <t>
-          <list style='empty'>
-            <t>
-          Note: According to <xref target="rfc5245bis"/>, "A check list with at 
-          least one pair that is Waiting is called an active check list, 
-          and a check list with all pairs Frozen is called a frozen check list." 
-          Formally speaking an active check list does not have a state of Active
-          and a frozen check list does not have a state of Frozen, because the
-          only check list states are Running, Completed, and Failed.
-            </t>
-          </list>
-        </t>
-        <t>
           A Trickle ICE agent initially considers all check lists to be
           frozen.  It then inspects the first check list and attempts to 
           unfreeze all candidates it has received so far that belong to the 
@@ -403,12 +389,6 @@
           agent SHOULD follow a policy of "first one wins" and not re-apply 
           the pruning procedure if a higher-priority candidate pair is 
           received from the remote agent.
-        </t>
-        <t>
-          Respecting the order in which check lists have been reported to an
-          ICE implementation is crucial to the frozen candidates
-          algorithm, so that connectivity
-          checks are performed simultaneously by both agents.
         </t>
       </section>
     </section>
@@ -532,9 +512,7 @@
       <t>
         When trickle updates are sent, each candidate MUST be
         delivered to the receiving Trickle ICE implementation not more
-        than once and in the same order that they were sent. In other
-        words, if there are any candidate retransmissions, they must
-        be hidden from the ICE implementation.
+        than once. Ixf there are any candidate retransmissions, they must be hidden from the ICE implementation.
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
@@ -542,7 +520,7 @@
         delayed updates for a previous session can be recognized as such
         and ignored by the receiving party.  For example, applications
         that choose to signal candidates via SDP may include a ufrag value in
-        the SDP that represents candidates such as:
+        the corresponding a=candidate line such as:
         <figure>
           <artwork>
 <![CDATA[
@@ -560,62 +538,6 @@
         so that they have a consistent view of which candidates are
         to be paired.  This is especially important in the case of ICE
         restarts (see <xref target='subsequent.oa'/>).
-      </t>
-      <t>
-        One important aspect of Vanilla ICE is that connectivity checks
-        for a specific foundation and component are attempted
-        simultaneously by both agents, so that any firewalls or NATs
-        fronting the agents would whitelist both endpoints and allow
-        all except for the first ("suicide") packets to go through. This
-        is also crucial to unfreezing candidates at the right time.
-      </t>
-      <t>
-        In order to preserve this feature in Trickle ICE, when trickling
-        candidates agents MUST respect the order of the components as
-        they appear (implicitly or explicitly) in the offer/answer
-        descriptions. Therefore a candidate for a specific component
-        MUST NOT be sent prior to candidates for other components within
-        the same foundation.
-      </t>
-      <t>
-        For example, the following SDP description contains two
-        components (RTP and RTCP) and two foundations (host and 
-        server reflexive):
-        <figure>
-          <artwork>
-<![CDATA[
-  v=0
-  o=jdoe 2890844526 2890842807 IN IP6 2001:db8:a0b:12f0::1
-  s=
-  c=IN IP4 2001:db8:a0b:12f0::1
-  t=0 0
-  a=ice-pwd:asd88fgpdd777uzjYhagZg
-  a=ice-ufrag:8hhY
-  m=audio 5000 RTP/AVP 0
-  a=rtpmap:0 PCMU/8000
-  a=candidate:1 1 UDP 2130706431 2001:db8:a0b:12f0::1 5000 typ host
-  a=candidate:1 2 UDP 2130706431 2001:db8:a0b:12f0::1 5001 typ host
-  a=candidate:2 1 UDP 1694498815 2001:db8:a0b:12f0::3 5000 typ srflx
-      raddr 2001:db8:a0b:12f0::1 rport 8998
-  a=candidate:2 2 UDP 1694498815 2001:db8:a0b:12f0::3 5001 typ srflx
-      raddr 2001:db8:a0b:12f0::1 rport 8998
-]]>
-          </artwork>
-        </figure>
-        For this description the RTCP host candidate MUST NOT be sent
-        prior to the RTP host candidate. Similarly the RTP server
-        reflexive candidate MUST be sent together with or prior to the
-        RTCP server reflexive candidate.
-      </t>
-      <t>
-        Note: The order restriction only applies among candidates
-        that belong to the same foundation.
-      </t>
-      <t>
-        It is also equally important to preserve this order across media
-        streams, which is covered by the requirement to always start
-        unfreezing candidates starting from the first media stream
-        as described under <xref target="check.lists"/>.
       </t>
       <t>
         Once the candidate has been sent to the remote party, the agent
@@ -697,12 +619,13 @@
                   foundation matches the one in the new pair and whose
                   state is neither Succeeded nor Failed (eventually the
                   new pair will get unfrozen after the ongoing
-                  check for the existing pair concludes);
+                  check for the existing pair concludes) and whose component
+                  ID precedes the one of the new pair;
                 </t>
                 <t hangText="Waiting: ">
                   if the list contains no pairs with the same foundation
                   as the new one, or in case such pairs exist but they
-                  are all in either the Succeeded or Failed states.
+                  are all in either the Succeeded or Failed states or the new pair's component ID precedes theirs.
                 </t>
               </list>
             </t>
@@ -1277,6 +1200,64 @@
         In addition to reducing signaling traffic this approach also
         removes the need to discover STUN bindings, or to make TURN or
         UPnP allocations, which may considerably lighten ICE processing.
+      </t>
+    </section>
+    <section title='Preserving candidate order while trickling'>
+      <t>
+        One important aspect of Vanilla ICE is that connectivity checks
+        for a specific foundation and component are attempted
+        simultaneously by both agents, so that any firewalls or NATs
+        fronting the agents would whitelist both endpoints and allow
+        all except for the first ("suicide") packets to go through. This
+        is also crucial to unfreezing candidates at the right time.
+      </t>
+      <t>
+        In order to preserve this feature in Trickle ICE, when trickling
+        candidates agents MUST respect the order of the components and streams
+        as they have been negotiated appear (implicitly or explicitly) in the offer/answer
+        descriptions. Therefore a candidate for a specific component
+        MUST NOT be sent prior to candidates for other components within
+        the same foundation.
+      </t>
+      <t>
+        For example, the following SDP description contains two
+        components (RTP and RTCP) and two foundations (host and 
+        server reflexive):
+        <figure>
+          <artwork>
+<![CDATA[
+  v=0
+  o=jdoe 2890844526 2890842807 IN IP6 2001:db8:a0b:12f0::1
+  s=
+  c=IN IP4 2001:db8:a0b:12f0::1
+  t=0 0
+  a=ice-pwd:asd88fgpdd777uzjYhagZg
+  a=ice-ufrag:8hhY
+  m=audio 5000 RTP/AVP 0
+  a=rtpmap:0 PCMU/8000
+  a=candidate:1 1 UDP 2130706431 2001:db8:a0b:12f0::1 5000 typ host
+  a=candidate:1 2 UDP 2130706431 2001:db8:a0b:12f0::1 5001 typ host
+  a=candidate:2 1 UDP 1694498815 2001:db8:a0b:12f0::3 5000 typ srflx
+      raddr 2001:db8:a0b:12f0::1 rport 8998
+  a=candidate:2 2 UDP 1694498815 2001:db8:a0b:12f0::3 5001 typ srflx
+      raddr 2001:db8:a0b:12f0::1 rport 8998
+]]>
+          </artwork>
+        </figure>
+        For this description the RTCP host candidate MUST NOT be sent
+        prior to the RTP host candidate. Similarly the RTP server
+        reflexive candidate MUST be sent together with or prior to the
+        RTCP server reflexive candidate.
+      </t>
+      <t>
+        Note: The order restriction only applies among candidates
+        that belong to the same foundation.
+      </t>
+      <t>
+        It is also equally important to preserve this order across media
+        streams, which is covered by the requirement to always start
+        unfreezing candidates starting from the first media stream
+        as described under <xref target="check.lists"/>.
       </t>
     </section>
     <section title='Changes from Earlier Versions'>
