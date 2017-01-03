@@ -187,6 +187,9 @@
             <xref target="rfc5245bis"/> (e.g., UPnP based port allocation 
             or XMPP Jingle Relay Nodes <xref target="XEP-0278"/>).
           </t>
+          <t hangText="ICE Description:">
+            Any session-related (as opposed to candidate-related) attributes required to configure an ICE agent. Those include but are not limited to "ice-ufrag", "ice-pwd", and "ice-options".
+          </t>
           <t hangText="Trickled Candidates:">
             Candidates that a Trickle ICE agent sends after an offer
             or answer but within the same context.
