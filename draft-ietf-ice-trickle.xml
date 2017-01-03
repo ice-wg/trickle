@@ -1212,13 +1212,13 @@
         simultaneously by both agents, so that any firewalls or NATs
         fronting the agents would whitelist both endpoints and allow
         all except for the first ("suicide") packets to go through. This
-        is also crucial to unfreezing candidates at the right time.
+        is also important to unfreezing candidates at the right time. While 
+        not crucial, preserving this behaviour in Trickle ICE is likely to 
+        improve ICE performance.
       </t>
       <t>
-        In order to preserve this feature in Trickle ICE, when trickling
-        candidates agents MUST respect the order of the components and streams
-        as they have been negotiated appear (implicitly or explicitly) in the offer/answer
-        descriptions. Therefore a candidate for a specific component
+        To achieve this, when trickling candidates agents MUST respect the order of the components and streams as they have been negotiated 
+        appear (implicitly or explicitly) in the offer/answer descriptions. Therefore a candidate for a specific component
         MUST NOT be sent prior to candidates for other components within
         the same foundation.
       </t>
