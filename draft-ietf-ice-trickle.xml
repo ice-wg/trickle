@@ -588,14 +588,10 @@
         <t>
           <list style='empty'>
             <t>
-          Note: Replacing pre-existing pairs with seemingly equivalent 
-          higher-priority ones helps guarantee that both agents will have 
-          the same view of candidate priorities. This is particularly 
-          important during aggressive nomination, when priority is sometimes 
-          the only way a controlled agent can determine the selected pair.
-          It is for that same reason that peer-reflexive candidates need to
-          always be updated if equivalent alternatives are received through
-          signaling.
+          Note: so that both agents will have the same view of candidate priorities, 
+          it is important to replacing pre-existing pairs with seemingly equivalent 
+          higher-priority ones and to always update peer-reflexive candidates 
+          if equivalent alternatives are received through signaling.
             </t>
           </list>
         </t>
@@ -653,19 +649,25 @@
         </list>
       </t>
       <t>
-        A controlled Trickle ICE agent SHOULD send
-        end-of-candidates indications after gathering for a media stream
-        has completed, unless ICE processing terminates before the agent has
-        had a chance to do so. Sending the indication is necessary in
-        order to avoid ambiguities and speed up the conclusion of ICE 
-        processing. On the other hand, a 
-        controlling agent MAY 
-        conclude ICE processing prior to sending end-of-candidates
-        indications for all streams. This would typically be the case
-        with aggressive nomination. However, it is RECOMMENDED that
-        controlling agents do send such indications whenever possible
-        for the sake of consistency and to keep middle boxes and
-        controlled agents up-to-date on the state of ICE processing.
+        Sending an end-of-candidates indication in a timely manner is necessary 
+        in order to avoid ambiguities and speed up the conclusion of ICE processing. 
+        In particular: 
+        <list style='symbols'>
+          <t>
+            A controlled Trickle ICE agent SHOULD send an end-of-candidates 
+            indication after it has completed gathering for a media stream, 
+            unless ICE processing terminates before the agent has had a chance 
+            to complete gathering. 
+          </t>
+          <t>
+            A controlling agent MAY conclude ICE processing prior to sending 
+            end-of-candidates indications for all streams.  However, it is 
+            RECOMMENDED for a controlling agent to send end-of-candidates 
+            indications whenever possible for the sake of consistency and to 
+            keep middleboxes and controlled agents up-to-date on the state of 
+            ICE processing.
+          </t>
+        </list>
       </t>
       <t>
         When sending an end-of-candidates indication during trickling
@@ -929,9 +931,7 @@
       <t>
         The authors would like to thank Taylor Brandstetter for 
         identifying the need to replace pre-existing peer-reflexive 
-        candidates with higher-priority ones received via trickling 
-        and the fact that not doing so could break aggressive 
-        nomination.
+        candidates with higher-priority ones received via trickling.
      </t>
      <t>   
         The authors would also like to thank Bernard Aboba, 
@@ -1272,6 +1272,10 @@
           <list style='symbols'>
             <t>
               Removed dependency on SDP and offer/answer model.
+            </t>
+            <t>
+              Removed mentions of aggressive nomination, since it is
+              deprecated in 5245bis.
             </t>
           </list>
         </t>
