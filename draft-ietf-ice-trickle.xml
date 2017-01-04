@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-07'>
+     docName='draft-ietf-ice-trickle-05'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -145,7 +145,7 @@
         how regular ICE processing needs to be modified when
         building and updating check lists, and how Trickle ICE
         implementations interoperate with agents that only
-        implement so-called "Vanilla ICE" processing as defined in
+        implement regular ICE processing as defined in
         <xref target="rfc5245bis"/>.
       </t>
       <t>
@@ -170,14 +170,10 @@
       <t>
         This specification makes use of all terminology defined 
         for Interactive Connectivity Establishment in
-        <xref target="rfc5245bis"/>.
+        <xref target="rfc5245bis"/>. In addition, it defines the following terms:
       </t>
       <t>
         <list style="hanging">
-          <t hangText="Vanilla ICE:">
-            The Interactive Connectivity Establishment protocol as
-            defined in <xref target="rfc5245bis"/>. 
-          </t>
           <t hangText="Candidate Gatherer:">
             A module used by an ICE agent to obtain local candidates.
             Candidate gatherers use different mechanisms for
@@ -203,7 +199,7 @@
             A Trickle ICE mode of operation where the offerer gathers
             its first generation of candidates strictly before creating
             and sending the offer. Once sent, that offer can be
-            processed by Vanilla ICE agents and does not require support
+            processed by regular ICE agents and does not require support
             for this specification. It also allows Trickle ICE capable
             answerers to still gather candidates and perform
             connectivity checks in a non-blocking way, thus roughly
@@ -250,7 +246,7 @@
         that support capabilities discovery can attempt to verify whether or 
         not the remote party supports Trickle ICE. If an agent determines 
         that the remote party does not support Trickle ICE, it MUST fall back 
-        to using Vanilla ICE or abandon the entire session.
+        to using regular ICE or abandon the entire session.
       </t>
       <t>
         In application protocols that use SDP, a user agent supporting 
@@ -272,7 +268,7 @@
         An agent starts gathering candidates as soon as it has an
         indication that communication is imminent (e.g., a user interface
         cue or an explicit request to initiate a session). Contrary to
-        Vanilla ICE, implementations of Trickle ICE do not need to
+        regular ICE, implementations of Trickle ICE do not need to
         gather candidates in a blocking manner. Therefore, unless half
         trickle is being used, agents SHOULD generate and transmit their
         initial offer as early as possible, in order to allow the remote
@@ -305,7 +301,7 @@
       </t>
       <t>
         Methods for calculating priorities and foundations, as well as 
-        determining redundancy of candidates, work just as with Vanilla
+        determining redundancy of candidates, work just as with regular
         ICE.
       </t>
     </section>
@@ -314,14 +310,14 @@
         When an agent receives an initial offer, it will first check if
         the offer or offerer indicates support for Trickle ICE as explained in
         <xref target="disco"/>. If this is not the case, the agent MUST
-        process the offer according to Vanilla ICE procedures 
+        process the offer according to regular ICE procedures 
         <xref target="rfc5245bis"/> or offer/answer processing rules
         <xref target="RFC3264"/> if no ICE support is detected at all.
       </t>
       <t>
         If support for Trickle ICE is
         confirmed, an agent will automatically assume support for
-        Vanilla ICE as well even if the support verification procedure
+        regular ICE as well even if the support verification procedure
         in <xref target="rfc5245bis"/> indicates otherwise. Specifically, 
         the rules from <xref target="rfc5245bis"/> would imply that ICE 
         itself is not supported if the initial offer includes no candidates 
@@ -361,7 +357,7 @@
           obtained local and remote candidates, agents begin
           forming candidate pairs, computing candidate pair priorities
           and ordering candidate pairs, pruning duplicate pairs, and
-          creating check lists according to the Vanilla ICE procedures
+          creating check lists according to the regular ICE procedures
           described in <xref target="rfc5245bis"/>. 
         </t>
         <t>
@@ -397,7 +393,7 @@
     </section>
     <section title="Receiving the Initial Answer">
       <t>
-        When receiving an answer, agents follow Vanilla ICE
+        When receiving an answer, agents follow regular ICE
         procedures to determine their role, after which they
         form check lists (as described in <xref target="check.lists"/>)
         and begin connectivity checks.
@@ -406,7 +402,7 @@
     <section title='Performing Connectivity Checks' >
       <t>
         For the most part, Trickle ICE agents perform connectivity
-        checks following Vanilla ICE procedures. However, the fact that
+        checks following regular ICE procedures. However, the fact that
         gathering and communicating candidates is asynchronous 
         in Trickle ICE imposes a number of changes as
         described in the following sections.
@@ -432,7 +428,7 @@
           The ICE specification <xref target='rfc5245bis'/>, Section 7.1.3.3, 
           requires that agents update check lists and timer states upon 
           completing a connectivity check transaction. During such an 
-          update, Vanilla ICE agents would set the state of a check list 
+          update, regular ICE agents would set the state of a check list 
           to Failed if both of the following two conditions are satisfied:
         </t>
         <t>
@@ -468,7 +464,7 @@
           </list>
         </t>
         <t>
-          Vanilla ICE requires that agents then update all other check
+          Regular ICE requires that agents then update all other check
           lists, placing one pair from each of them into the Waiting
           state, effectively unfreezing all remaining check lists. However,
           under Trickle ICE other check lists might still be empty at
@@ -490,7 +486,7 @@
         and other non-host candidate gathering mechanisms begin to
         yield results. Whenever an agent discovers such a new candidate
         it will compute its priority, type, foundation and component ID
-        according to normal Vanilla ICE procedures.
+        according to regular ICE procedures.
       </t>
       <t>
         The new candidate is then checked for redundancy against the
@@ -499,7 +495,7 @@
         redundant and will be ignored. This would often happen for
         server reflexive candidates that match the host addresses they
         were obtained from (e.g., when the latter are public IPv4
-        addresses). Contrary to Vanilla ICE, Trickle ICE agents will
+        addresses). Contrary to regular ICE, Trickle ICE agents will
         consider the new candidate redundant regardless of its priority.
       </t>
       <t>
@@ -515,7 +511,7 @@
       <t>
         When trickle updates are sent, each candidate MUST be
         delivered to the receiving Trickle ICE implementation not more
-        than once. Ixf there are any candidate retransmissions, they must be hidden from the ICE implementation.
+        than once. If there are any candidate retransmissions, they must be hidden from the ICE implementation.
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
@@ -619,10 +615,10 @@
               <list style="hanging">
                 <t hangText="Frozen: ">
                   if there is at least one pair in the check list whose
-                  foundation matches the one in the new pair and whose
+                  foundation matches the one in the new pair, whose
                   state is neither Succeeded nor Failed (eventually the
                   new pair will get unfrozen after the ongoing
-                  check for the existing pair concludes) and whose component
+                  check for the existing pair concludes), and whose component
                   ID precedes the one of the new pair;
                 </t>
                 <t hangText="Waiting: ">
@@ -719,7 +715,7 @@
       </t>
       <t>
         This specification does not
-        override Vanilla ICE semantics for concluding ICE processing.
+        override regular ICE semantics for concluding ICE processing.
         Therefore, even if end-of-candidates indications are sent,
         agents will still have to go through pair nomination. Also, if
         pairs have been nominated for components and media streams, ICE
@@ -831,9 +827,9 @@
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
              anchor="half-trickle">
       <t>
-        In half trickle mode, the offerer sends a regular, Vanilla ICE 
+        In half trickle mode, the offerer sends a regular, regular ICE 
         offer, with a complete set of candidates. This ensures that the
-        offer can be processed by a Vanilla ICE answerer and is mostly
+        offer can be processed by a regular ICE answerer and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
         confirmed prior to sending an initial offer.  The initial offer 
         indicates support for Trickle ICE, so that the answerer can
@@ -849,7 +845,7 @@
         no way for an agent to verify in advance whether a remote
         party supports Trickle ICE. Because the initial offer contains 
         a full set of candidates, it can thus be handled by a regular
-        Vanilla ICE agent, while still allowing a Trickle ICE agent to use
+        ICE agent, while still allowing a Trickle ICE agent to use
         the optimization defined in this specification. This prevents
         negotiation from failing in the former case while still giving
         roughly half the Trickle ICE benefits in the latter (hence the
@@ -873,7 +869,7 @@
         needs to send the offer. Because the answerer will be able
         to trickle candidates, both agents will be able to start
         connectivity checks and complete ICE processing earlier than
-        with Vanilla ICE and potentially even as early as with full
+        with regular ICE and potentially even as early as with full
         trickle.
       </t>
       <t>
@@ -884,7 +880,7 @@
         necessarily have a way of distinguishing between call
         intentions and other user activity. In such cases, using full
         trickle is most likely to result in an ideal user experience.
-        Even so, using half trickle would be an improvement over Vanilla
+        Even so, using half trickle would be an improvement over regular
         ICE because it would result in a better experience for answerers.
       </t>
     </section>
@@ -1207,7 +1203,7 @@
     </section>
     <section title='Preserving candidate order while trickling'>
       <t>
-        One important aspect of Vanilla ICE is that connectivity checks
+        One important aspect of regular ICE is that connectivity checks
         for a specific foundation and component are attempted
         simultaneously by both agents, so that any firewalls or NATs
         fronting the agents would whitelist both endpoints and allow
@@ -1217,7 +1213,7 @@
         improve ICE performance.
       </t>
       <t>
-        To achieve this, when trickling candidates agents MUST respect the order of the components and streams as they have been negotiated 
+        To achieve this, when trickling candidates agents MUST respect the order in which the components and streams as they have been negotiated 
         appear (implicitly or explicitly) in the offer/answer descriptions. Therefore a candidate for a specific component
         MUST NOT be sent prior to candidates for other components within
         the same foundation.
