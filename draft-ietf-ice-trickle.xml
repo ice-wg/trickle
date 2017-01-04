@@ -63,6 +63,13 @@
     <author initials="P." surname="Saint-Andre" fullname="Peter Saint-Andre">
       <organization>Filament</organization>
       <address>
+        <postal>
+          <street>P.O. Box 787</street>
+          <city>Parker</city>
+          <region>CO</region>
+          <code>80134</code>
+          <country>USA</country>
+        </postal>
         <email>peter@filament.com</email>
         <uri>https://filament.com/</uri>
       </address>
@@ -221,16 +228,19 @@
     </section>
     <section title='Determining Support for Trickle ICE' anchor="disco">
       <t>
-        Application protocols that use Trickle ICE should do one of
-        the following:
+        To fully support Trickle ICE, applications
+        SHOULD incorporate one of the following mechanisms to enable implementations
+        to determine whether Trickle ICE is supported:
       </t>
       <t>
-        <list style='symbols'>
+        <list style='numbers'>
           <t>
-            Provide a way for agents to verify support of Trickle ICE
-            prior to initiating a session (XMPP's
+            Provide a capabilities discovery method so that agents can verify 
+            support of Trickle ICE prior to initiating a session (XMPP's
             <xref target="XEP-0030">Service Discovery</xref> is 
             one such mechanism).
+          </t>
+          <t>
           </t>
           <t>
             Make support for Trickle ICE mandatory so that user agents
@@ -239,9 +249,9 @@
         </list>
       </t>
       <t>
-        Alternately, for cases where a protocol provides neither of the
-        foregoing methods, agents may rely on provisioning/configuration or
-        use the half trickle procedure described in
+        Where an application protocol cannot determine
+        ahead of time whether Trickle ICE is supported, agents MAY utilize the half trickle procedure
+        described in
         <xref target="half-trickle"/>.
       </t>
       <t>
@@ -252,11 +262,10 @@
         to using regular ICE or abandon the entire session.
       </t>
       <t>
-        In application protocols that use SDP, a user agent supporting 
-        Trickle ICE MUST include a token of "trickle" in the 
-        ice-options attribute every time it sends an ICE description. 
-        This enables an agent that receives an ICE description to verify 
-        support by checking for inclusion of the token. 
+        Even if a signaling protocol does not include a capabilities discovery
+        method, a user agent can provide an indication within the ICE description
+        that it supports Trickle ICE (e.g., in SDP this would be a token of "trickle" 
+        in the ice-options attribute).
       </t>
       <t>
         Dedicated discovery semantics and half trickle are needed
