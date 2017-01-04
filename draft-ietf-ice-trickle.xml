@@ -341,19 +341,17 @@
       <section title="Sending the Initial Response">
         <t>
           An agent can respond to an initial ICE description at any point while
-          gathering candidates. The ICE description can again contain any set of
+          gathering candidates. Here again the ICE description MAY contain any set of
           candidates, including all candidates or no candidates. (The
           benefit of including no candidates is to send the ICE description as 
           quickly as possible, so that both parties can consider the 
           overall session to be under active negotiation as soon as 
-          possible.) Unless the receiving agent is
-          protecting host addresses for privacy reasons, it would
-          typically construct this ICE description including only host
-          addresses, thus enabling the remote party to also start forming
-          check lists and performing connectivity checks.
+          possible.) 
         </t>
         <t>
-          In application protocols that use SDP, the responder's ICE description MUST indicate support for Trickle ICE as described in <xref target="disco"/>.
+          As noted under <xref target="disco"/>, in application protocols that use 
+          SDP the responder's ICE description can indicate support for Trickle ICE 
+          by including a token of "trickle" in the ice-options attribute.
         </t>
       </section>
       <section title="Forming Check Lists and Beginning Connectivity
