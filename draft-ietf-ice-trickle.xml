@@ -298,13 +298,6 @@
         candidate gathering more quickly).
       </t>
       <t>
-        For optimal performance, it is RECOMMENDED that the candidates in
-        an initial ICE description (if any) be host candidates only. This would allow 
-        both agents to start gathering server reflexive, relayed, and other 
-        non-host candidates simultaneously, and it would also enable them to
-        begin connectivity checks.
-      </t>
-      <t>
         If the privacy implications of revealing host addresses on an
         endpoint device are a
         concern, agents can generate an ICE description that contains no
