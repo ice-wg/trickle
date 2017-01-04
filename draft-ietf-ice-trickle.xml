@@ -506,11 +506,10 @@
         Next the agent sends (i.e., trickles) the newly discovered
         candidate(s) to the remote agent. The actual delivery of the new
         candidates is handled by signaling protocols such as SIP or XMPP.
-        Trickle ICE imposes no restrictions on the way this is done or
-        whether it is done at all. For example, some applications may
+        Trickle ICE imposes no restrictions on the way this is done 
+        (e.g., some applications may
         choose not to send trickle updates for server reflexive
-        candidates and rely on the discovery of peer reflexive ones
-        instead.
+        candidates and instead rely on the discovery of peer reflexive ones).
       </t>
       <t>
         When trickle updates are sent, each candidate MUST be
@@ -1219,8 +1218,10 @@
         improve ICE performance.
       </t>
       <t>
-        To achieve this, when trickling candidates agents MUST respect the order in which the components and streams as they have been negotiated 
-        appear (implicitly or explicitly) in the offer/answer descriptions. Therefore a candidate for a specific component
+        To achieve this, when trickling candidates agents MUST respect the 
+        order in which the components and streams as they have been negotiated 
+        appear (implicitly or explicitly) in the offer/answer descriptions. 
+        Therefore a candidate for a specific component
         MUST NOT be sent prior to candidates for other components within
         the same foundation.
       </t>
@@ -1255,12 +1256,8 @@
         RTCP server reflexive candidate.
       </t>
       <t>
-        Note: The order restriction only applies among candidates
-        that belong to the same foundation.
-      </t>
-      <t>
-        It is also equally important to preserve this order across media
-        streams, which is covered by the requirement to always start
+        Similar considerations apply at the level of media streams in addition
+        to foundations; this is covered by the requirement to always start
         unfreezing candidates starting from the first media stream
         as described under <xref target="check.lists"/>.
       </t>
