@@ -389,9 +389,8 @@
         </t>
         <t>
           With regard to pruning of duplicate candidate pairs, a Trickle ICE
-          agent SHOULD follow a policy of "first one wins" and not re-apply 
-          the pruning procedure if a higher-priority candidate pair is 
-          received from the remote agent.
+          agent SHOULD follow a policy of 
+          "highest priority wins, except for peer reflexive candidates".
         </t>
       </section>
     </section>
@@ -702,11 +701,21 @@
         it is planning to potentially send additional candidates (e.g., in
         case the remote party turns out to support Trickle ICE).
       </t>
+      <!-- 
+           @emcho I am wondering if we should delete this entirely. See
+           Peter Thatcher's comment on October 31, 2016:
+
+           "Why is session-level end-of-candidates restricted to offers/answers. 
+           Better yet, if you don't talk about offers/answers at all, this should 
+           just go away."
+
+           What do you think?
       <t>
         When an end-of-candidates indication is sent as part of an 
-        initial  ICE description or response, it can be considered to apply to the session as a whole, 
+        initial ICE description or response, it can be considered to apply to the session as a whole, 
         which is equivalent to having it apply to all media streams.
       </t>
+      -->
       <t>
         After an agent sends the end-of-candidates indication, it will
         update the state of the corresponding check list as explained
@@ -724,7 +733,7 @@
         Therefore, even if end-of-candidates indications are sent,
         agents will still have to go through pair nomination. Also, if
         pairs have been nominated for components and media streams, ICE
-        processing will still conclude even if end-of-candidates
+        processing MAY still conclude even if end-of-candidates
         indications have not been received for all streams.
       </t>
       </section>
@@ -806,27 +815,10 @@
         Either agent MAY generate a subsequent ICE description at any time allowed
         by <xref target="RFC3264"/>. When this happens agents will use
         <xref target="rfc5245bis"/> semantics to determine whether or not
-        the new ICE description requires an ICE restart. If this is the case then
-        agents would perform Trickle ICE as they would in an initial
-        exchange of ICE descriptions.
-      </t>
-      <t>
-        The only differences between an ICE restart and a brand new
-        media session are that:
-      </t>
-      <t>
-        <list style='symbols'>
-          <t>
-            during the restart, media can continue to be sent to the
-            previously validated pair.
-          </t>
-          <t>
-            both agents are already aware whether or not their peer
-            supports Trickle ICE, and there is no longer need for
-            performing half trickle or confirming support with other
-            mechanisms.
-          </t>
-        </list>
+        the new ICE description requires an ICE restart.  If an ICE restart
+        occurs, the user agents can assume that Trickle ICE is still supported
+        if support was determined previously, and thus can engage in Trickle ICE 
+        behavior as they would in an initial exchange of ICE descriptions.
       </t>
     </section>
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
