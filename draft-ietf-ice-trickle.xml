@@ -105,8 +105,8 @@
         relatively straightforward to implement and debug once deployed, 
         it can also be rather lengthy. 
         Candidate gathering often involves things like querying
-        <xref target="RFC5389">STUN</xref> servers, discovering UPnP
-        devices, and allocating relayed candidates at
+        <xref target="RFC5389">STUN</xref> servers
+        and allocating relayed candidates at
         <xref target="RFC5766">TURN</xref> servers. All of these actions can
         be delayed for a noticeable amount of time; although they can be
         run in parallel, they still need to respect the pacing
@@ -187,11 +187,7 @@
           <t hangText="Candidate Gatherer:">
             A module used by an ICE agent to obtain local candidates.
             Candidate gatherers use different mechanisms for
-            discovering local candidates. Some of them would typically
-            make use of protocols such as STUN or TURN. Others may also
-            employ techniques that are not referenced within
-            <xref target="rfc5245bis"/> (e.g., UPnP based port allocation 
-            or XMPP Jingle Relay Nodes <xref target="XEP-0278"/>).
+            discovering local candidates, such as STUN and TURN. 
           </t>
           <t hangText="ICE Description:">
             Any session-related (as opposed to candidate-related) attributes required to configure an ICE agent. These include but are not limited to "ice-ufrag", "ice-pwd", and "ice-options".
@@ -207,7 +203,7 @@
           </t>
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
-            its first generation of candidates strictly before creating
+            its first batch of candidates strictly before creating
             and sending the initial ICE description. Once sent, that ICE description can be
             processed by regular ICE agents and does not require support
             for this specification. It also allows Trickle ICE capable
@@ -221,7 +217,7 @@
             The regular mode of operation for Trickle ICE agents, in which
             an initial ICE description can include any number of candidates (even
             zero candidates) and does not need to include the entire
-            first generation of candidates as in half trickle.
+            first batch of candidates as in half trickle.
           </t>
         </list>
       </t>
@@ -277,7 +273,7 @@
     </section>
     <section title='Sending the Initial ICE Description' anchor="initial">
       <t>
-        An agent starts gathering candidates as soon as it has an
+        An agent can start gathering candidates as soon as it has an
         indication that communication is imminent (e.g., a user interface
         cue or an explicit request to initiate a session). Contrary to
         regular ICE, implementations of Trickle ICE do not need to
@@ -287,11 +283,11 @@
         party to start gathering and trickling candidates.
       </t>
       <t>
-        Trickle ICE agents MAY include any set of candidates in an
+        Trickle ICE agents MAY include any mix of candidates in an
         ICE description. This includes the possibility of sending an ICE description that 
         contains all the candidates that the agent plans to use
         (as in half trickle mode), sending an ICE description that contains only a 
-        publically-reachable IP address (e.g., a host candidate at a media 
+        publicly-reachable IP address (e.g., a candidate at a media 
         relay that is known to not be behind a firewall), or sending an ICE description 
         with no candidates at all (in which case the initiator can obtain the 
         responder's initial candidate list sooner and the responder can begin 
@@ -307,7 +303,8 @@
       <t>
         Methods for calculating priorities and foundations, as well as 
         determining redundancy of candidates, work just as with regular
-        ICE.
+        ICE (with the exception of pruning of duplicate peer reflexive
+        candidates as described under <xref target='check.lists'/>).
       </t>
     </section>
     <section title='Receiving the Initial ICE Description' >
@@ -378,14 +375,14 @@
         <t>
           A Trickle ICE agent initially considers all check lists to be
           frozen.  It then inspects the first check list and attempts to 
-          unfreeze all candidates it has received so far that belong to the 
+          unfreeze all candidate pairs it has received so far that belong to the 
           first component on the first media stream (i.e., the first media
           stream that was reported to the ICE implementation from the
           using application). If that first component of the first media stream
           does not contain candidates for one or more of the currently known 
           pair foundations, and if candidate pairs already exist for that 
           foundation in one of the following components or media streams, then 
-          the agent unfreezes the first of those.
+          the agent unfreezes the first of those candidate pairs.
         </t>
         <t>
           With regard to pruning of duplicate candidate pairs, a Trickle ICE
@@ -471,13 +468,17 @@
           lists, placing one pair from each of them into the Waiting
           state, effectively unfreezing all remaining check lists. However,
           under Trickle ICE other check lists might still be empty at
-          that point. Therefore a Trickle ICE agent SHOULD monitor whether 
+          that point. Therefore a Trickle ICE agent MUST monitor whether 
           a check list is active or frozen independently of the state of the 
-          candidate pairs that the check list contains. A Trickle ICE agent
-          SHOULD consider a check list to be active either when unfreezing 
-          the first candidate pair in the check list or when there is no
-          candidate pair in the check list (i.e., when the check list is 
-          empty).
+          candidate pairs that the check list contains, and 
+          MUST consider a check list to be active when unfreezing 
+          the first candidate pair in the check list.  When there is no
+          candidate pair in a check list (i.e., when the check list is 
+          empty), a Trickle ICE agent MAY consider it to be either active
+          or frozen.  An empty frozen check list SHOULD be changed to active if
+          another check list is completely finished (i.e., every pair is either
+          Successful or Failed), or if another checklist has a valid candidate 
+          pair for all components.
         </t>
       </section>
     </section>
@@ -513,7 +514,8 @@
       <t>
         When trickle updates are sent, each candidate MUST be
         delivered to the receiving Trickle ICE implementation not more
-        than once. If there are any candidate retransmissions, they must be hidden from the ICE implementation.
+        than once. If there are any candidate retransmissions, they need to be 
+        hidden from the ICE implementation.
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
@@ -552,6 +554,10 @@
         pairing the new local candidates with them and adding the pairs
         to the existing check lists according to their priority.
       </t>
+      <t>
+        Note: A Trickle ICE agent MUST NOT pair a local candidate until it
+        has been trickled to the remote agent.
+      </t>
       <section title='Pairing Newly Learned Candidates and Updating
                       Check Lists' anchor="cand-pairing">
         <t>
@@ -581,8 +587,7 @@
           the agent MUST replace it with the new candidate it received 
           (regardless of their respective priorities); this is done by 
           setting the priority of the new candidate to the priority of the 
-          pre-existing candidate and then re-sorting the 
-          check list.
+          pre-existing candidate and then re-sorting the check list.
         </t>
         <t>
           <list style='empty'>
@@ -609,10 +614,10 @@
             </t>
             <t>
               else if the check list is non-empty and active, then the
-              state of the new pair will be set to
+              state of the new pair will be set as follows:
               <list style="hanging">
                 <t hangText="Frozen: ">
-                  if there is at least one pair in the check list whose
+                  if there is at least one pair in any check list whose
                   foundation matches the one in the new pair, whose
                   state is neither Succeeded nor Failed (eventually the
                   new pair will get unfrozen after the ongoing
@@ -622,7 +627,8 @@
                 <t hangText="Waiting: ">
                   if the list contains no pairs with the same foundation
                   as the new one, or in case such pairs exist but they
-                  are all in either the Succeeded or Failed states or the new pair's component ID precedes theirs.
+                  are all in either the Succeeded or Failed state 
+                  or the new pair's component ID precedes theirs.
                 </t>
               </list>
             </t>
@@ -708,6 +714,10 @@
            "Why is session-level end-of-candidates restricted to offers/answers. 
            Better yet, if you don't talk about offers/answers at all, this should 
            just go away."
+
+           See also Taylor Brandstetter's comment on October 19, 2016:
+
+           "... this is incorrect. “a=end-of-candidates” is media-level."
 
            What do you think?
       <t>
@@ -825,12 +835,12 @@
              anchor="half-trickle">
       <t>
         In half trickle mode, the initiator sends a regular ICE description
-        with a complete set of candidates. This ensures that the
+        with a complete batch of candidates. This ensures that the
         ICE description can be processed by a regular ICE responder and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
         confirmed prior to sending an initial ICE description.  The initial ICE description 
-        indicates support for Trickle ICE, so that the responder can
-        respond with an incomplete set of candidates and continue 
+        indicates support for Trickle ICE, which means the responder can
+        respond with an incomplete batch of candidates and continue 
         trickling the rest.  A half trickle ICE description would typically contain an
         end-of-candidates indication, although this is not mandatory
         because if trickle support is confirmed then the initiator can
@@ -841,7 +851,7 @@
         The half trickle mechanism can be used in cases where there is
         no way for an agent to verify in advance whether a remote
         party supports Trickle ICE. Because the initial ICE description contains 
-        a full set of candidates, it can thus be handled by a regular
+        a full batch of candidates, it can thus be handled by a regular
         ICE agent, while still allowing a Trickle ICE agent to use
         the optimization defined in this specification. This prevents
         negotiation from failing in the former case while still giving
@@ -920,14 +930,10 @@
       </t>
     </section>
     <section title='Acknowledgements'>
-      <t>
-        The authors would like to thank Taylor Brandstetter for 
-        identifying the need to replace pre-existing peer-reflexive 
-        candidates with higher-priority ones received via trickling.
-     </t>
      <t>   
-        The authors would also like to thank Bernard Aboba, 
-        Flemming Andreasen, Rajmohan Banavi, Christer Holmberg, 
+        The authors would like to thank Bernard Aboba, 
+        Flemming Andreasen, Rajmohan Banavi, 
+        Taylor Brandstetter, Christer Holmberg, 
         Jonathan Lennox, Enrico Marocco, Pal Martinsen, 
         Martin Thomson, Dale R. Worley, and Brandon Williams 
         for their reviews and suggestions on improving this document.
@@ -1035,16 +1041,6 @@
           <date month="June" year="2008" />
         </front>
         <seriesInfo name="XEP" value="XEP-0030" />
-      </reference>
-      <reference anchor="XEP-0278">
-        <front>
-          <title>XEP-0278: Jingle Relay Nodes</title>
-          <author initials='T.' surname='Camargo'
-                  fullname='T. Camargo'>
-          </author>
-          <date month="June" year="2011" />
-        </front>
-        <seriesInfo name="XEP" value="XEP-0278" />
       </reference>
     </references>
     <section title='Interaction with ICE'
@@ -1155,7 +1151,7 @@
         An ICE lite agent would generate an ICE description 
         as per <xref target="rfc5245bis"/> and 
         would indicate support for Trickle ICE. Given
-        that they will contain a complete set of candidates (the agent's
+        that they will contain a complete batch of candidates (the agent's
         host candidates), these ICE descriptions would also be
         accompanied with an end-of-candidates indication.
       </t>
@@ -1194,8 +1190,8 @@
       </figure>
       <t>
         In addition to reducing signaling traffic this approach also
-        removes the need to discover STUN bindings, or to make TURN or
-        UPnP allocations, which may considerably lighten ICE processing.
+        removes the need to discover STUN bindings or make TURN 
+        allocations, which may considerably lighten ICE processing.
       </t>
     </section>
     <section title='Preserving candidate order while trickling'>
