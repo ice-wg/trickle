@@ -159,7 +159,8 @@
         This specification does not define the usage of Trickle ICE with any
         specific signaling protocol (however, see 
         <xref target="I-D.ietf-mmusic-trickle-ice-sip"/> for usage with SIP
-        <xref target='RFC3261'/>).
+        <xref target='RFC3261'/> 
+        and <xref target='XEP-0176'/> for usage with XMPP <xref target='RFC6120'/>).
         Similarly, it does not define Trickle ICE in
         terms of the Session Description Protocol (SDP) <xref target='RFC4566'/>
         or the offer/answer model <xref target='RFC3264'/> because 
@@ -972,6 +973,7 @@
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
+      <?rfc include="reference.RFC.6120"?>
 <reference anchor='I-D.ietf-mmusic-trickle-ice-sip'>
 <front>
 <title>A Session Initiation Protocol (SIP) usage for Trickle ICE</title>
