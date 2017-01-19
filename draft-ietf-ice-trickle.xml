@@ -124,8 +124,8 @@
         This document defines an alternative mode of
         operation for ICE implementations, known as "Trickle ICE",
         in which candidates can be exchanged incrementally. This enables
-        ICE agents to exchange candidates as soon as a
-        session has been initiated. Connectivity checks for a media
+        ICE agents to exchange candidates as soon as an ICE negotiation session
+        has been initiated. Connectivity checks for a media
         stream can also start as soon as the first candidates for that
         stream become available.
       </t>
@@ -190,21 +190,36 @@
             Candidate gatherers use different mechanisms for
             discovering local candidates, such as STUN and TURN. 
           </t>
+          <t hangText="Generation:">
+            The complete set of candidates sent within an ICE negotiation session.
+          </t>
           <t hangText="ICE Description:">
-            Any session-related (as opposed to candidate-related) attributes required to configure an ICE agent. These include but are not limited to "ice-ufrag", "ice-pwd", and "ice-options".
+            Any session-related (as opposed to candidate-related) attributes 
+            required to configure an ICE agent. These include but are not 
+            limited to "ice-ufrag", "ice-pwd", and "ice-options".
+          </t>
+          <t hangText="ICE Negotiation Session:">
+            A virtual session involving all of the interactions between 
+            ICE agents up until an ICE restart (if any).
+          </t>
+          <t hangText="Initiator:">
+            The ICE agent that starts an ICE negotiation session.
+          </t>
+          <t hangText="Responder:">
+            The ICE agent with which an initiator starts an ICE negotiation session.
           </t>
           <t hangText="Trickled Candidates:">
             Candidates that a Trickle ICE agent sends after sending an initial ICE description
-            or respondering to an initial ICE description, but within the same context.
+            or responding to an initial ICE description, but within the same context.
             Trickled candidates can be sent in parallel with candidate
             gathering and connectivity checks.
           </t>
-          <t hangText="Trickling/Trickle (v.):">
+          <t hangText="Trickling:">
             The act of sending trickled candidates.
           </t>
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
-            its first batch of candidates strictly before creating
+            its first generation of candidates strictly before creating
             and sending the initial ICE description. Once sent, that ICE description can be
             processed by regular ICE agents and does not require support
             for this specification. It also allows Trickle ICE capable
@@ -218,7 +233,7 @@
             The regular mode of operation for Trickle ICE agents, in which
             an initial ICE description can include any number of candidates (even
             zero candidates) and does not need to include the entire
-            first batch of candidates as in half trickle.
+            first generation of candidates as in half trickle.
           </t>
         </list>
       </t>
@@ -836,12 +851,12 @@
              anchor="half-trickle">
       <t>
         In half trickle mode, the initiator sends a regular ICE description
-        with a complete batch of candidates. This ensures that the
+        with a complete generation of candidates. This ensures that the
         ICE description can be processed by a regular ICE responder and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
         confirmed prior to sending an initial ICE description.  The initial ICE description 
         indicates support for Trickle ICE, which means the responder can
-        respond with an incomplete batch of candidates and continue 
+        respond with an incomplete generation of candidates and continue 
         trickling the rest.  A half trickle ICE description would typically contain an
         end-of-candidates indication, although this is not mandatory
         because if trickle support is confirmed then the initiator can
@@ -852,7 +867,7 @@
         The half trickle mechanism can be used in cases where there is
         no way for an agent to verify in advance whether a remote
         party supports Trickle ICE. Because the initial ICE description contains 
-        a full batch of candidates, it can thus be handled by a regular
+        a full generation of candidates, it can thus be handled by a regular
         ICE agent, while still allowing a Trickle ICE agent to use
         the optimization defined in this specification. This prevents
         negotiation from failing in the former case while still giving
@@ -1153,7 +1168,7 @@
         An ICE lite agent would generate an ICE description 
         as per <xref target="rfc5245bis"/> and 
         would indicate support for Trickle ICE. Given
-        that they will contain a complete batch of candidates (the agent's
+        that they will contain a complete generation of candidates (the agent's
         host candidates), these ICE descriptions would also be
         accompanied with an end-of-candidates indication.
       </t>
