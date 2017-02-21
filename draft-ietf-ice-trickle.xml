@@ -585,60 +585,103 @@
         <t>
           Once this is done, the agent examines the check list looking for 
           another pair that would be redundant with the new one. If such a 
-          pair exists and the type of its remote candidate is not peer reflexive, 
-          the pair with the higher priority is kept and the one with the 
-          lower priority is discarded. If, on the other hand, the type of 
-          the remote candidate in the pre-existing pair is peer reflexive, 
-          the agent MUST replace it with the new candidate it received 
-          (regardless of their respective priorities); this is done by 
-          setting the priority of the new candidate to the priority of the 
+          pair exists and the type of its remote candidate is not peer 
+          reflexive, the pair with the higher priority is kept and the one 
+          with the lower priority is discarded. If, on the other hand, the 
+          type of the remote candidate in the pre-existing pair is peer 
+          reflexive, the agent MUST replace it with the newly formed pair 
+          (regardless of their respective priorities); this is done 
+          by setting the priority of the new candidate to the priority of the 
           pre-existing candidate and then re-sorting the check list.
         </t>
         <t>
           <list style='empty'>
             <t>
-          Note: So that both agents will have the same view of candidate priorities, 
-          it is important to replacing existing pairs with seemingly equivalent 
-          higher-priority ones and to always update peer-reflexive candidates 
-          if equivalent alternatives are received through signaling.
+          Note: So that both agents will have the same view of candidate
+          priorities, it is important to replacing existing pairs with 
+          seemingly equivalent higher-priority ones and to always update 
+          peer-reflexive candidates if equivalent alternatives are received 
+          through signaling.
             </t>
           </list>
         </t>
         <t>
           For all other pairs, including those with a server reflexive
-          local candidate that were not found to be redundant:
-          <list style="symbols">
-            <t>
-              if this check list is frozen, then the new pair will
-              be assigned a state of Frozen.
-            </t>
-            <t>
-              else if the check list is active and it is either empty or
-              contains only candidates in the Succeeded and Failed
-              states, then the new pair's state is set to Waiting.
-            </t>
-            <t>
-              else if the check list is non-empty and active, then the
-              state of the new pair will be set as follows:
-              <list style="hanging">
-                <t hangText="Frozen: ">
-                  if there is at least one pair in any check list whose
-                  foundation matches the one in the new pair, whose
-                  state is neither Succeeded nor Failed (eventually the
-                  new pair will get unfrozen after the ongoing
-                  check for the existing pair concludes), and whose component
-                  ID precedes the one of the new pair;
-                </t>
-                <t hangText="Waiting: ">
-                  if the list contains no pairs with the same foundation
-                  as the new one, or in case such pairs exist but they
-                  are all in either the Succeeded or Failed state 
-                  or the new pair's component ID precedes theirs.
-                </t>
-              </list>
-            </t>
-          </list>
+          local candidate that were not found to be redundant the rules from 
+          the following section apply:
         </t>
+        <section title='Inserting a new pair in a check list' anchor="      
+              cand-insert">
+          <t>
+            Consider the following tabular representation of all checklists in 
+            an agent: 
+          </t>
+          <t>
+            <figure title="Trickle State Updates" anchor="fig-cand-table">
+              <artwork>
+<![CDATA[
+              f1    f2    f3    f4    f5
+           +-----------------------------
+Audio.RTP  |  cp    cp    cp
+           |
+Audio.RTCP |  cp    cp    cp    cp
+           |
+Video.RTP  |  cp                      cp
+           |
+Video.RTCP |  cp                      cp
+
+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Every line in the table represents a component for a given media
+            stream. Every column represents one foundation.
+          </t>
+          <t>
+            When an agent commences ICE processing, it will as per 
+            <xref target="rfc5245bis"/>, unfreeze (i.e., place in the Waiting 
+            state) the first candidate pair in every column. Then, as some of
+            the checks succeed, the agent will proceed by unfreezing every 
+            pair that is immediately underneath one that entered into the 
+            Succeeded state. ICE also adds the rule that, should all the pairs 
+            in a media stream, for one foundation be unfrozen (e.g., column 1,
+            rows 1 and 2 in the example table above), then the entire column 
+            gets automatically unfrozen.
+          </t>
+          <t>
+            Trickle ICE preserves all these rules. This means that if, for 
+            some reasom, a trickle agent begins connectivity checks with all 
+            its pairs already present, the way that pair states  change will 
+            be indistinguishable from that of a regular ICE agent. The one 
+            difference that Trickle ICE brings is that some candidates may 
+            arrive after connectivity checks have started. 
+          </t>
+          <t>
+            When this happens the agents will determine the cell where the 
+            newly formed pair will need to be placed and set its state to:
+          </t>
+          <t>
+            <list style="hanging">
+              <t hangText="Waiting: ">
+                if this is the first pair to be added to its column;
+              </t>
+              <t hangText="Waiting: ">
+                if the pair immediately preceding the new pair is in the 
+                Succeeded state;
+              </t>
+              <t hangText="Waiting: ">
+                if there is at least one pair in the same column and in a 
+                succeeding row (i.e., below the row of the newly added pair), 
+                whose state is either Succeeded or Failed.
+              </t>
+              <t hangText="Frozen: ">
+                in all other cases. 
+              </t>
+            </list>
+          </t>
+        </section>
       </section>
       <section title='Announcing End of Candidates'
              anchor="end-of-candidates">
@@ -1133,8 +1176,8 @@
       </t>
       <t>
         Another potential problem could arise when a non-trickle
-        ICE implementation initiates an interaction with a Trickle ICE implementation. Consider the
-        following case:
+        ICE implementation initiates an interaction with a Trickle ICE 
+        implementation. Consider the following case:
         <list style='numbers'>
           <t>
             Alice's client has a non-Trickle ICE implementation.
@@ -1153,8 +1196,8 @@
         </list>
       </t>
       <t>
-        After Bob's agent receives Alice's initial ICE description it would immediately
-        start connectivity checks. It would also start gathering
+        After Bob's agent receives Alice's initial ICE description it would 
+        immediately start connectivity checks. It would also start gathering
         candidates, which would take a long time because of the unreachable
         STUN server. By the time Bob's answer is ready and sent to
         Alice, Bob's connectivity checks may well have failed: until
