@@ -607,10 +607,10 @@
         </t>
         <t>
           For all other pairs, including those with a server reflexive
-          local candidate that were not found to be redundant the rules from 
-          the following section apply:
+          local candidate that were not found to be redundant, the rules 
+          specified in the following section apply.
         </t>
-        <section title='Inserting a new pair in a check list' anchor="      
+        <section title='Inserting a New Pair in a Check List' anchor="      
               cand-insert">
           <t>
             Consider the following tabular representation of all checklists in 
@@ -620,61 +620,61 @@
             <figure title="Trickle State Updates" anchor="fig-cand-table">
               <artwork>
 <![CDATA[
-              f1    f2    f3    f4    f5
-           +-----------------------------
-Audio.RTP  |  cp    cp    cp
-           |
-Audio.RTCP |  cp    cp    cp    cp
-           |
-Video.RTP  |  cp                      cp
-           |
-Video.RTCP |  cp                      cp
-
-
++------------+------+------+------+------+------+
+|            |  f1  |  f2  |  f3  |  f4  |  f5  |
++------------+------+------+------+------+------+
+| Audio.RTP  |  cp  |  cp  |  cp  |      |      |
++------------+------+------+------+------+------+
+| Audio.RTCP |  cp  |  cp  |  cp  |  cp  |      |
++------------+------+------+------+------+------+
+| Video.RTP  |  cp  |      |      |      |  cp  |
++------------+------+------+------+------+------+
+| Video.RTCP |  cp  |      |      |      |  cp  |
++------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
             Every line in the table represents a component for a given media
-            stream. Every column represents one foundation.
+            stream. Every column represents one foundation.  Every cell represents
+            one candidate pair.
           </t>
           <t>
-            When an agent commences ICE processing, it will as per 
-            <xref target="rfc5245bis"/>, unfreeze (i.e., place in the Waiting 
-            state) the first candidate pair in every column. Then, as some of
-            the checks succeed, the agent will proceed by unfreezing every 
-            pair that is immediately underneath one that entered into the 
-            Succeeded state. ICE also adds the rule that, should all the pairs 
-            in a media stream, for one foundation be unfrozen (e.g., column 1,
-            rows 1 and 2 in the example table above), then the entire column 
-            gets automatically unfrozen.
+            When an agent commences ICE processing as per <xref target="rfc5245bis"/>, 
+            it will unfreeze (i.e., place in the Waiting 
+            state) the topmost candidate pair in every column. Then, as 
+            the checks proceed, for each pair that enters the Succeeded state
+            the agent will unfreeze the pair that is immediately underneath the 
+            pair that succeeded (e.g., if the pair in column 1, row 1 succeeds then
+            the agent will unfreeze the pair in column 1, row 2). ICE also specifies 
+            that, if all the pairs in a media stream for one foundation are 
+            unfrozen (e.g., column 1, rows 1 and 2), 
+            then all of the candidate pairs in the entire column are unfrozen.
           </t>
           <t>
-            Trickle ICE preserves all these rules. This means that if, for 
-            some reasom, a trickle agent begins connectivity checks with all 
-            its pairs already present, the way that pair states  change will 
-            be indistinguishable from that of a regular ICE agent. The one 
-            difference that Trickle ICE brings is that some candidates may 
-            arrive after connectivity checks have started. 
+            Trickle ICE preserves all of these rules. This means that if, for 
+            some reason, a Trickle agent were to begin connectivity checks with all 
+            of its pairs already present, the way that pair states change 
+            is indistinguishable from that of a regular ICE agent. 
           </t>
           <t>
-            When this happens the agents will determine the cell where the 
-            newly formed pair will need to be placed and set its state to:
+            Of course, the major difference with Trickle ICE is that candidates can 
+            arrive after connectivity checks have started. When this happens, an 
+            agent sets the state of the newly formed pair as follows:
           </t>
           <t>
             <list style="hanging">
               <t hangText="Waiting: ">
-                if this is the first pair to be added to its column;
+                if this is the topmost pair in this column;
               </t>
               <t hangText="Waiting: ">
-                if the pair immediately preceding the new pair is in the 
-                Succeeded state;
+                if the pair immediately above the newly added pair in this column 
+                is in the Succeeded state;
               </t>
               <t hangText="Waiting: ">
-                if there is at least one pair in the same column and in a 
-                succeeding row (i.e., below the row of the newly added pair), 
-                whose state is either Succeeded or Failed.
+                if there is at least one pair in this column below the row of the
+                newly added pair whose state is either Succeeded or Failed.
               </t>
               <t hangText="Frozen: ">
                 in all other cases. 
