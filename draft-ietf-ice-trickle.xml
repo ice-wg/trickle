@@ -636,8 +636,8 @@
             </figure>
           </t>
           <t>
-            Every line in the table represents a component for a given media
-            stream. Every column represents one foundation.  Every cell represents
+            Each row in the table represents a component for a given media
+            stream. Each column represents one foundation.  Each cell represents
             one candidate pair.
           </t>
           <t>
