@@ -649,11 +649,12 @@
             pair that succeeded (e.g., if the pair in column 1, row 1 succeeds then
             the agent will unfreeze the pair in column 1, row 2). ICE also specifies 
             that, if all the pairs in a media stream for one foundation are 
-            unfrozen (e.g., column 1, rows 1 and 2), 
-            then all of the candidate pairs in the entire column are unfrozen.
+            unfrozen (e.g., column 1, rows 1 and 2 representing both components
+            for the audio stream), then all of the candidate pairs in the entire 
+            column are unfrozen (e.g., column 1, rows 3 and 4).
           </t>
           <t>
-            Trickle ICE preserves all of these rules. This means that if, for 
+            Trickle ICE preserves all of these rules. This implies that if, for 
             some reason, a Trickle agent were to begin connectivity checks with all 
             of its pairs already present, the way that pair states change 
             is indistinguishable from that of a regular ICE agent. 
@@ -666,15 +667,15 @@
           <t>
             <list style="hanging">
               <t hangText="Waiting: ">
-                if the newly added pair is the topmost pair in this column;
+                if the newly formed pair is the topmost pair in this column;
               </t>
               <t hangText="Waiting: ">
-                if the pair immediately above the newly added pair in this column 
+                if the pair immediately above the newly formed pair in this column 
                 is in the Succeeded state;
               </t>
               <t hangText="Waiting: ">
                 if there is at least one pair in this column below the row of the
-                newly added pair whose state is either Succeeded or Failed.
+                newly formed pair whose state is either Succeeded or Failed.
               </t>
               <t hangText="Frozen: ">
                 in all other cases. 
