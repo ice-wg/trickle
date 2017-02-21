@@ -666,7 +666,7 @@
           <t>
             <list style="hanging">
               <t hangText="Waiting: ">
-                if this is the topmost pair in this column;
+                if the newly added pair is the topmost pair in this column;
               </t>
               <t hangText="Waiting: ">
                 if the pair immediately above the newly added pair in this column 
