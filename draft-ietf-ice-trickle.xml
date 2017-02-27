@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-06'>
+     docName='draft-ietf-ice-trickle-07'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -191,7 +191,9 @@
             discovering local candidates, such as STUN and TURN. 
           </t>
           <t hangText="Generation:">
-            The complete set of candidates sent within an ICE negotiation session.
+            All of the candidates sent within an ICE negotiation session; these are
+            the candidates that are associated with a local/remote ufrag pair (which 
+            will change on ICE restart, if any).
           </t>
           <t hangText="ICE Description:">
             Any session-related (as opposed to candidate-related) attributes 
@@ -219,7 +221,7 @@
           </t>
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
-            its first generation of candidates strictly before creating
+            a generation of candidates strictly before creating
             and sending the initial ICE description. Once sent, that ICE description can be
             processed by regular ICE agents and does not require support
             for this specification. It also allows Trickle ICE capable
@@ -232,8 +234,8 @@
           <t hangText="Full Trickle:">
             The typical mode of operation for Trickle ICE agents, in which
             an initial ICE description can include any number of candidates (even
-            zero candidates) and does not need to include the entire
-            first generation of candidates as in half trickle.
+            zero candidates) and does not need to include a complete
+            set of candidates as in half trickle.
           </t>
         </list>
       </t>
@@ -866,13 +868,13 @@
              anchor="half-trickle">
       <t>
         In half trickle mode, the initiator sends a regular ICE description
-        with a complete generation of candidates. This ensures that the
+        with a full generation of candidates. This ensures that the
         ICE description can be processed by a regular ICE responder and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
         confirmed prior to sending an initial ICE description.  The initial ICE description 
         indicates support for Trickle ICE, which means the responder can
-        respond with an incomplete generation of candidates and continue 
-        trickling the rest.  A half trickle ICE description would typically contain an
+        respond with something less than a full generation of candidates and then 
+        trickle the rest.  A half trickle ICE description would typically contain an
         end-of-candidates indication, although this is not mandatory
         because if trickle support is confirmed then the initiator can
         choose to trickle additional candidates before it sends an
@@ -1218,9 +1220,8 @@
         An ICE lite agent would generate an ICE description 
         as per <xref target="rfc5245bis"/> and 
         would indicate support for Trickle ICE. Given
-        that they will contain a complete generation of candidates,
-        these ICE descriptions would also be
-        accompanied by an end-of-candidates indication.
+        that the ICE description will contain a full generation of candidates,
+        it would also be accompanied by an end-of-candidates indication.
       </t>
       <t>
         When performing full trickle, a full ICE implementation could
