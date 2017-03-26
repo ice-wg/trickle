@@ -1038,12 +1038,12 @@
     </section>
     <section title='Acknowledgements'>
      <t>   
-        The authors would like to thank Bernard Aboba, 
-        Flemming Andreasen, Rajmohan Banavi, 
-        Taylor Brandstetter, Christer Holmberg, 
-        Jonathan Lennox, Enrico Marocco, Pal Martinsen, 
-        Martin Thomson, Dale R. Worley, and Brandon Williams 
-        for their reviews and suggestions on improving this document.
+        The authors would like to thank Bernard Aboba, Flemming Andreasen, 
+        Rajmohan Banavi, Taylor Brandstetter, Christer Holmberg, Ari Keranen,
+        Paul Kyzivat, Jonathan Lennox, Enrico Marocco, Pal Martinsen, Thomas Stach,
+        Peter Thatcher, Martin Thomson, Dale R. Worley, and Brandon Williams 
+        for their reviews and suggestions on improving this document. Thanks also
+        to Ari Keranen and Peter Thatcher for chairing the ICE Working Group.
       </t>
     </section>
   </middle>
@@ -1307,6 +1307,34 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-07'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Addressed editorial feedback from chairs review.
+            </t>
+          </list>
+        </t>
+      </section>
+      <section title='Changes from draft-ietf-ice-trickle-06'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Clarified terminology regarding generations.
+            </t>
+          </list>
+        </t>
+      </section>
+      <section title='Changes from draft-ietf-ice-trickle-05'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Rewrote the text on inserting a new pair into a 
+              check list.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-04'>
         <t>
           <list style='symbols'>
