@@ -124,7 +124,7 @@
         This document defines an alternative or supplementary mode of
         operation for ICE implementations, known as "Trickle ICE",
         in which candidates can be exchanged incrementally. This enables
-        ICE agents to exchange candidates as soon as an ICE negotiation session
+        ICE agents to exchange candidates as soon as an ICE session
         has been initiated. Connectivity checks for a media
         stream can also start as soon as the first candidates for that
         stream become available.
@@ -191,7 +191,7 @@
             discovering local candidates, such as STUN and TURN. 
           </t>
           <t hangText="Generation:">
-            All of the candidates sent within an ICE negotiation session; these are
+            All of the candidates sent within an ICE session; these are
             the candidates that are associated with a local/remote ufrag pair (which 
             will change on ICE restart, if any).
           </t>
@@ -200,14 +200,14 @@
             required to configure an ICE agent. These include but are not 
             limited to "ice-ufrag", "ice-pwd", and "ice-options".
           </t>
-          <t hangText="ICE Negotiation Session:">
-            A virtual session involving all of the interactions between 
+          <t hangText="ICE Session:">
+            All of the ICE-related interactions between 
             ICE agents up until an ICE restart (if any).
           </t>
           <t hangText="Trickled Candidates:">
             Candidates that a Trickle ICE agent sends after sending an initial 
             ICE description or responding to an initial ICE description, but within 
-            the same ICE negotiation session.  Trickled candidates can be sent in 
+            the same ICE session.  Trickled candidates can be sent in 
             parallel with candidate gathering and connectivity checks.
           </t>
           <t hangText="Trickling:">
@@ -528,7 +528,7 @@
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
-        ICE negotiation session, so that if there is an ICE restart, any
+        ICE session, so that if there is an ICE restart, any
         delayed updates for a previous session can be recognized as such
         and ignored by the receiving party.  For example, applications
         that choose to signal candidates via SDP may include a ufrag value in
@@ -545,7 +545,7 @@
       </t>
       <t>
         Note: The signaling protocol needs to provide a mechanism for both
-        parties to indicate and agree on the ICE negotiation session in force
+        parties to indicate and agree on the ICE session in force
         (as identified by the ufrag)
         so that they have a consistent view of which candidates are
         to be paired.  This is especially important in the case of ICE
@@ -562,10 +562,6 @@
         remote candidates for this stream and component, it will begin
         pairing the new local candidates with them and adding the pairs
         to the existing check lists according to their priority.
-      </t>
-      <t>
-        Note: A Trickle ICE agent MUST NOT pair a local candidate until it
-        has been trickled to the remote agent.
       </t>
       <section title='Pairing Newly Learned Candidates and Updating
                       Check Lists' anchor="cand-pairing">
@@ -597,17 +593,6 @@
           (regardless of their respective priorities); this is done 
           by setting the priority of the new candidate to the priority of the 
           pre-existing candidate and then re-sorting the check list.
-        </t>
-        <t>
-          <list style='empty'>
-            <t>
-          Note: So that both agents will have the same view of candidate
-          priorities, it is important to replace existing pairs with 
-          seemingly equivalent higher-priority ones and to always update 
-          peer-reflexive candidates if equivalent alternatives are received 
-          through signaling.
-            </t>
-          </list>
         </t>
         <t>
           For all other pairs, including those with a server reflexive
@@ -764,7 +749,7 @@
         After an agent sends the end-of-candidates indication, it will
         update the state of the corresponding check list as explained
         in <xref target="state-updates"/>. Past that point, an
-        agent MUST NOT send any new candidates within this ICE negotiation session. 
+        agent MUST NOT send any new candidates within this ICE session. 
         After an agent has received an end-of-candidates indication, it 
         MUST also ignore any newly received candidates for that media 
         stream or media session. Therefore, adding new candidates to the 
@@ -857,7 +842,7 @@
              anchor="subsequent">
       <t>
         Either agent MAY generate a subsequent ICE description at any time allowed
-        by <xref target="RFC3264"/>. When this happens agents will use
+        by the signaling protocol in use. When this happens agents will use
         <xref target="rfc5245bis"/> semantics to determine whether or not
         the new ICE description requires an ICE restart.  If an ICE restart
         occurs, the user agents can assume that Trickle ICE is still supported
@@ -933,7 +918,7 @@
         <list style='symbols'>
           <t>
             A signaling protocol SHOULD provide a way for parties to advertise 
-            and discover support for Trickle ICE before an ICE negotiation 
+            and discover support for Trickle ICE before an ICE 
             session begins (see <xref target='disco'/>).
           </t>
           <t>
@@ -944,7 +929,7 @@
           </t>
           <t>
             A signaling protocol MUST provide a mechanism for both parties 
-            to indicate and agree on the ICE negotiation session in force
+            to indicate and agree on the ICE session in force
             (see <xref target='send-trickling'/>).
           </t>
           <t>
