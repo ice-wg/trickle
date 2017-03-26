@@ -200,10 +200,6 @@
             required to configure an ICE agent. These include but are not 
             limited to "ice-ufrag", "ice-pwd", and "ice-options".
           </t>
-          <t hangText="ICE Session:">
-            All of the ICE-related interactions between 
-            ICE agents up until an ICE restart (if any).
-          </t>
           <t hangText="Trickled Candidates:">
             Candidates that a Trickle ICE agent sends after sending an initial 
             ICE description or responding to an initial ICE description, but within 
@@ -1191,19 +1187,20 @@
             Alice and Bob are both located in different networks with
             Network Address Translation (NAT). Alice and Bob themselves
             have different address but both networks use the same
-            <xref target="RFC1918"/> block.
+            private internet block (e.g., the "20-bit block"
+            172.16/12 specified in <xref target="RFC1918"/>).
           </t>
           <t>
-            Alice sends Bob the candidate 2001:db8:a0b:12f0::10 which also happens
+            Alice sends Bob the candidate 172.16.0.1 which also happens
             to correspond to an existing host on Bob's network.
           </t>
           <t>
-            Bob creates a check list consisting solely of 2001:db8:a0b:12f0::10 and
+            Bob creates a check list consisting solely of 172.16.0.1 and
             starts checks.
           </t>
           <t>
-            These checks reach the host at 2001:db8:a0b:12f0::10 in Bob's network,
-            which responds with an ICMP "port unreachable" error and per
+            These checks reach the host at 172.16.0.1 in Bob's network,
+            which responds with an ICMP "port unreachable" error; per
             <xref target="rfc5245bis"/> Bob marks the transaction as
             Failed.
           </t>
