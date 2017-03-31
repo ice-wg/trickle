@@ -191,9 +191,9 @@
             discovering local candidates, such as STUN and TURN. 
           </t>
           <t hangText="Generation:">
-            All of the candidates sent within an ICE session; these are
-            the candidates that are associated with a local/remote ufrag pair (which 
-            will change on ICE restart, if any).
+            All of the candidates sent within an ICE session; these are the
+            candidates that are associated with a specific local/remote ufrag
+            pair (which will change on ICE restart, if any occurs).
           </t>
           <t hangText="ICE Description:">
             Any session-related (as opposed to candidate-related) attributes 
@@ -550,7 +550,7 @@
       <t>
         Once the candidate has been sent to the remote party, the agent
         checks if any remote candidates are currently known for this
-        same stream. If not, the new candidate will
+        same stream and component. If not, the new candidate will
         simply be added to the list of local candidates.
       </t>
       <t>
