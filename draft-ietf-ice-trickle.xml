@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-08'>
+     docName='draft-ietf-ice-trickle-09'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -201,8 +201,8 @@
             limited to "ice-ufrag", "ice-pwd", and "ice-options".
           </t>
           <t hangText="Trickled Candidates:">
-            Candidates that a Trickle ICE agent sends after sending an initial 
-            ICE description or responding to an initial ICE description, but within 
+            Candidates that a Trickle ICE agent sends after sending initial 
+            ICE parameters or responding to initial ICE parameters, but within 
             the same ICE session.  Trickled candidates can be sent in 
             parallel with candidate gathering and connectivity checks.
           </t>
@@ -383,7 +383,7 @@
         </t>
         <t>
           With regard to pruning of duplicate candidate pairs, a Trickle ICE
-          agent SHOULD follow a policy of pruning the lower priority
+          agent SHOULD follow a policy of keeping the higher priority
           candidate unless it is peer reflexive.
         </t>
       </section>
@@ -517,10 +517,11 @@
         candidates and instead rely on the discovery of peer reflexive ones).
       </t>
       <t>
-        When trickle updates are sent, each candidate MUST be
-        delivered to the receiving Trickle ICE implementation not more
-        than once. If there are any candidate retransmissions, they need to be 
-        hidden from the ICE implementation.
+        When trickle updates are sent, each candidate MUST be delivered 
+        to the receiving Trickle ICE implementation not more than once 
+        and in the same order that they were sent. If there are any 
+        candidate retransmissions, they need to be hidden from the ICE 
+        implementation.
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
@@ -558,6 +559,10 @@
         remote candidates for this stream and component, it will begin
         pairing the new local candidates with them and adding the pairs
         to the existing check lists according to their priority.
+      </t>
+      <t>
+        Note: A Trickle ICE agent MUST NOT pair a local candidate until it
+        has been trickled to the remote agent.
       </t>
       <section title='Pairing Newly Learned Candidates and Updating
                       Check Lists' anchor="cand-pairing">
@@ -924,6 +929,11 @@
             <xref target='send-trickling'/>).
           </t>
           <t>
+            A signaling protocol MUST deliver each trickled candidate not
+            more than once and in the same order that it was sent (see 
+            <xref target='send-trickling'/>).
+          </t>
+          <t>
             A signaling protocol MUST provide a mechanism for both parties 
             to indicate and agree on the ICE session in force
             (see <xref target='send-trickling'/>).
@@ -947,12 +957,14 @@
         improve ICE performance.
       </t>
       <t>
-        To achieve this, when trickling candidates agents MUST respect the 
-        order in which the components and streams as they have been negotiated 
-        appear (implicitly or explicitly) in the relevant ICE descriptions. 
-        Therefore a candidate for a specific component
-        MUST NOT be sent prior to candidates for other components within
-        the same foundation.
+        To achieve this, when trickling candidates, agents MUST respect the 
+        order in which the components and streams appear (implicitly or 
+        explicitly) as they have been negotiated by means of the relevant 
+        ICE parameters.  Therefore a candidate for a specific component 
+        MUST NOT be sent prior to candidates for other components within 
+        the same foundation. In addition, candidates MUST be paired, 
+        following the procedures in <xref target='cand-insert'/>, in the 
+        same order they are sent.
       </t>
       <t>
         For example, the following SDP description contains two
