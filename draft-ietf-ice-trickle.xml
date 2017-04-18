@@ -25,6 +25,7 @@
         <postal>
           <street>303 Colorado Street, #1600</street>
           <city>Austin</city>
+          <region>TX</region>
           <code>78701</code>
           <country>USA</country>
         </postal>
@@ -471,20 +472,20 @@
           ICE would prevent the agent from unfreezing those check lists (because
           the state of a check list depends on the state of the candidate
           pairs in that check list, but there are none yet). Therefore a Trickle 
-          ICE agent MUST monitor whether a check list is active or frozen 
+          ICE agent needs to monitor whether a check list is active or frozen 
           independently of the state of the candidate pairs in the check list
-          (since there might not be any pairs yet), and MUST consider a check 
-          list to be active whenever it adds the first candidate pair with a 
-          state of Waiting to the check list.
-        </t>
-        <t>
+          (since there might not be any pairs yet).
           With regard to empty check lists, by default a Trickle ICE agent MAY 
           consider an empty check list to be either active or frozen.  When a 
           Trickle ICE agent considers an empty check list to be frozen, during 
           the candidate checking process it SHOULD change the check list to 
           active if checking of another check list is completely finished (i.e., 
           if every pair in the other check list is either Successful or Failed), 
-          or if another check list has a valid candidate pair for all components.
+          if another check list has a valid candidate pair for all components,
+          or if it adds a candidate pair to the check list (because, in 
+          accordance with <xref target='cand-insert'/>, when inserting a new 
+          candidate pair into an empty check list, the agent sets the pair to a 
+          state of Waiting).
         </t>
       </section>
     </section>
@@ -608,70 +609,201 @@
             an agent: 
           </t>
           <t>
-            <figure title="Trickle State Updates" anchor="fig-cand-table">
+            <figure title="Example of Check List State" anchor="fig-checklist-0">
               <artwork>
 <![CDATA[
-+------------+------+------+------+------+------+
-|            |  f1  |  f2  |  f3  |  f4  |  f5  |
-+------------+------+------+------+------+------+
-| Audio.RTP  |  cp  |  cp  |  cp  |      |      |
-+------------+------+------+------+------+------+
-| Audio.RTCP |  cp  |  cp  |  cp  |  cp  |      |
-+------------+------+------+------+------+------+
-| Video.RTP  |  cp  |      |      |      |  cp  |
-+------------+------+------+------+------+------+
-| Video.RTCP |  cp  |      |      |      |  cp  |
-+------------+------+------+------+------+------+
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  |  cp  |  cp  |  cp  |      |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) |  cp  |  cp  |  cp  |  cp  |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  |  cp  |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
             Each row in the table represents a component for a given media
-            stream. Each column represents one foundation.  Each cell represents
+            stream (e.g., m1 and m2 might be the RTP and RTCP components
+            for audio). Each column represents one foundation. Each cell represents
             one candidate pair.
           </t>
           <t>
-            When an agent commences ICE processing as per <xref target="rfc5245bis"/>, 
+            When an agent commences ICE processing,
+            in accordance with Section 5.1.3.6 of
+            <xref target="rfc5245bis"/> 
             it will unfreeze (i.e., place in the Waiting 
-            state) the topmost candidate pair in every column. Then, as 
-            the checks proceed, for each pair that enters the Succeeded state
-            the agent will unfreeze the pair that is immediately underneath the 
-            pair that succeeded (e.g., if the pair in column 1, row 1 succeeds then
-            the agent will unfreeze the pair in column 1, row 2). ICE also specifies 
+            state) the topmost candidate pair in every column (i.e., the
+            pair with the lowest component ID).  This state is shown in
+            the following table, with candidate pairs in the Waiting state
+            marked by "w-cp".
+          </t>
+          <t>
+            <figure title="Initial Check List State" anchor="fig-checklist-1">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | w-cp | w-cp | w-cp |      |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) |  cp  |  cp  |  cp  | w-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  |  cp  |      |      |      | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Then, as the checks proceed (see Section 6.1.2.4.2.3 of
+            <xref target="rfc5245bis"/>), for each pair 
+            that enters the Succeeded state (denoted here by "s-cp"),
+            the agent will unfreeze all pairs for the same media stream and
+            foundation (e.g., if the pair in column 1, row 1 succeeds then
+            the agent will unfreeze the pair in column 1, row 2). 
+          </t>
+          <t>
+            <figure title="Check List State after Succeeded Check" anchor="fig-checklist-2">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  |  cp  |      |      |      | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            ICE also specifies 
             that, if all the pairs in a media stream for one foundation are 
             unfrozen (e.g., column 1, rows 1 and 2 representing both components
             for the audio stream), then all of the candidate pairs in the entire 
             column are unfrozen (e.g., column 1, rows 3 and 4).
           </t>
           <t>
-            Trickle ICE preserves all of these rules. This implies that if, for 
+            <figure title="Check List State with Unfrozen Media Stream" anchor="fig-checklist-3">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  | w-cp |      |      |      | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Trickle ICE preserves all of these rules as they apply to what we might 
+            call "static" check list sets. This implies that if, for 
             some reason, a Trickle agent were to begin connectivity checks with all 
             of its pairs already present, the way that pair states change 
             is indistinguishable from that of a regular ICE agent. 
           </t>
           <t>
-            Of course, the major difference with Trickle ICE is that candidates can 
+            Of course, the major difference with Trickle ICE is that check list 
+            sets can be dynamically updated because candidates can 
             arrive after connectivity checks have started. When this happens, an 
-            agent sets the state of the newly formed pair as follows:
+            agent sets the state of the newly formed pair as described below.
           </t>
           <t>
-            <list style="hanging">
-              <t hangText="Waiting: ">
-                if the newly formed pair is the topmost pair in this column;
-              </t>
-              <t hangText="Waiting: ">
-                if the pair immediately above the newly formed pair in this column 
-                is in the Succeeded state;
-              </t>
-              <t hangText="Waiting: ">
-                if there is at least one pair in this column below the row of the
-                newly formed pair whose state is either Succeeded or Failed.
-              </t>
-              <t hangText="Frozen: ">
-                in all other cases. 
-              </t>
-            </list>
+            Case 1: If the newly formed pair is the topmost pair in this column, set 
+            the state to Waiting (e.g., this would be the case if the newly formed pair 
+            were placed in column 4, row 1).
+          </t>
+          <t>
+            <figure title="Check List State with Newly Formed Pair, Case 1" anchor="fig-checklist-4">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | s-cp | w-cp | w-cp | w-cp |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  | w-cp |      |      |      | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t> 
+            Case 2: If the pair immediately above the newly formed pair in this column 
+            is in the Succeeded state, set the state to Waiting  (e.g., this would be 
+            the case if the pair in column 4, row 2 succeeded and the newly formed pair 
+            were placed in column 4, row 3);
+          </t>
+          <t>
+            <figure title="Check List State with Newly Formed Pair, Case 2" anchor="fig-checklist-5">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | s-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  | w-cp |      |      | w-cp | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Case 3: If there is at least one pair in this column below the row of the
+            newly formed pair whose state is either Succeeded or Failed (e.g., this 
+            would be the case if the pair in column 4, row 2 succeeded and the newly 
+            formed pair were placed in column 4, row 1).
+          </t>
+          <t>
+            <figure title="Check List State with Newly Formed Pair, Case 3" anchor="fig-checklist-6">
+              <artwork>
+<![CDATA[
++-----------------+------+------+------+------+------+
+|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
++-----------------+------+------+------+------+------+
+| m1 (Audio.RTP)  | s-cp | w-cp | w-cp | w-cp |      |
++-----------------+------+------+------+------+------+
+| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | s-cp |      |
++-----------------+------+------+------+------+------+
+| m3 (Video.RTP)  | w-cp |      |      | w-cp | w-cp |
++-----------------+------+------+------+------+------+
+| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
++-----------------+------+------+------+------+------+
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Case 4: In all other cases, set the state to Frozen.
           </t>
         </section>
       </section>
@@ -1320,6 +1452,16 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-09'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Reinstated text about in-order processing of messages
+              as a requirement for signaling protocols.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-08'>
         <t>
           <list style='symbols'>
