@@ -606,8 +606,9 @@
         <section title='Inserting a New Pair in a Check List' anchor="      
               cand-insert">
           <t>
-            Consider the following tabular representation of all checklists in 
-            an agent: 
+            Consider the following tabular representation of all check lists in 
+            an agent (note that initially for one of the foundations, i.e., f5, 
+            there are no candidate pairs): 
           </t>
           <t>
             <figure title="Example of Check List State" anchor="fig-checklist-0">
@@ -616,13 +617,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  cp  |  cp  |  cp  |      |      |
+| m1 (Audio.RTP)  |  F   |  F   |  F   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  cp  |  cp  |  cp  |  cp  |      |
+| m2 (Audio.RTCP) |  F   |  F   |  F   |  F   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  cp  |      |      |      |  cp  |
+| m3 (Video.RTP)  |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
+| m4 (Video.RTCP) |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -631,8 +632,10 @@
           <t>
             Each row in the table represents a component for a given media
             stream (e.g., m1 and m2 might be the RTP and RTCP components
-            for audio). Each column represents one foundation. Each cell represents
-            one candidate pair.
+            for audio). Each column represents one foundation. Each cell 
+            represents one candidate pair. In the foregoing table, "F" stands 
+            for "frozen"; in the tables below, "W" stands for "waiting" and
+            "S" stands for "succeeded".
           </t>
           <t>
             When an agent commences ICE processing,
@@ -642,7 +645,7 @@
             state) the topmost candidate pair in every column (i.e., the
             pair with the lowest component ID).  This state is shown in
             the following table, with candidate pairs in the Waiting state
-            marked by "w-cp".
+            marked by "W".
           </t>
           <t>
             <figure title="Initial Check List State" anchor="fig-checklist-1">
@@ -651,13 +654,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | w-cp | w-cp | w-cp |      |      |
+| m1 (Audio.RTP)  |  W   |  W   |  W   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  cp  |  cp  |  cp  | w-cp |      |
+| m2 (Audio.RTCP) |  F   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  cp  |      |      |      | w-cp |
+| m3 (Video.RTP)  |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
+| m4 (Video.RTCP) |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -666,7 +669,7 @@
           <t>
             Then, as the checks proceed (see Section 6.1.2.4.2.3 of
             <xref target="rfc5245bis"/>), for each pair 
-            that enters the Succeeded state (denoted here by "s-cp"),
+            that enters the Succeeded state (denoted here by "S"),
             the agent will unfreeze all pairs for the same media stream and
             foundation (e.g., if the pair in column 1, row 1 succeeds then
             the agent will unfreeze the pair in column 1, row 2). 
@@ -678,13 +681,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  cp  |      |      |      | w-cp |
+| m3 (Video.RTP)  |  F   |      |      |      |  W   |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  cp  |      |      |      |  cp  |
+| m4 (Video.RTCP) |  F   |      |      |      |  F   |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -704,13 +707,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  | w-cp |      |      |      | w-cp |
+| m3 (Video.RTP)  |  W   |      |      |      |  W   |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
+| m4 (Video.RTCP) |  W   |      |      |      |  F   |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -730,9 +733,10 @@
             agent sets the state of the newly formed pair as described below.
           </t>
           <t>
-            Case 1: If the newly formed pair is the topmost pair in this column, set 
+            Case 1: If the newly formed pair is the topmost pair in this column (i.e.
+            the topmost pair among all the check lists for this foundation), set 
             the state to Waiting (e.g., this would be the case if the newly formed pair 
-            were placed in column 4, row 1).
+            were placed in column 5, row 1).
           </t>
           <t>
             <figure title="Check List State with Newly Formed Pair, Case 1" anchor="fig-checklist-4">
@@ -741,13 +745,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | s-cp | w-cp | w-cp | w-cp |      |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  W   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | w-cp |      |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  | w-cp |      |      |      | w-cp |
+| m3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
+| m4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -755,9 +759,9 @@
           </t>
           <t> 
             Case 2: If the pair immediately above the newly formed pair in this column 
-            is in the Succeeded state, set the state to Waiting  (e.g., this would be 
-            the case if the pair in column 4, row 2 succeeded and the newly formed pair 
-            were placed in column 4, row 3);
+            is in the Succeeded state, set the state to Waiting (e.g., this would be 
+            the case if the pair in column 5, row 1 succeeded and the newly formed pair 
+            were placed in column 5, row 2);
           </t>
           <t>
             <figure title="Check List State with Newly Formed Pair, Case 2" anchor="fig-checklist-5">
@@ -766,23 +770,24 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | s-cp | w-cp | w-cp |      |      |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | s-cp |      |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  | w-cp |      |      | w-cp | w-cp |
+| m3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
+| m4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
-            Case 3: If there is at least one pair in this column below the row of the
-            newly formed pair whose state is either Succeeded or Failed (e.g., this 
-            would be the case if the pair in column 4, row 2 succeeded and the newly 
-            formed pair were placed in column 4, row 1).
+            Case 3: If there is at least one pair in this column above the row of the
+            newly formed pair whose state is either Succeeded or Failed, set the
+            state to Waiting (e.g., this would be the case if the pair in column 5, 
+            row 1 succeeded and two newly formed pairs were placed in column 5, rows 3
+            and 4).
           </t>
           <t>
             <figure title="Check List State with Newly Formed Pair, Case 3" anchor="fig-checklist-6">
@@ -791,13 +796,13 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  | s-cp | w-cp | w-cp | w-cp |      |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) | w-cp |  cp  |  cp  | s-cp |      |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  | w-cp |      |      | w-cp | w-cp |
+| m3 (Video.RTP)  |  W   |      |      |      |  W   |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) | w-cp |      |      |      |  cp  |
+| m4 (Video.RTCP) |  W   |      |      |      |  W   |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -1477,6 +1482,17 @@
             <t>
               Reinstated text about in-order processing of messages
               as a requirement for signaling protocols.
+            </t>
+            <t>
+              Added IANA registration template for ICE option.
+            </t>
+            <t>
+              Corrected Case 3 rule in Section 8.1.1 to ensure
+              consistency with regular ICE rules.
+            </t>
+            <t>
+              Added tabular representations to Section 8.1.1 in order
+              to illustrate the new pair rules.
             </t>
           </list>
         </t>
