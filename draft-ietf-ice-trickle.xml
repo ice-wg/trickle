@@ -267,7 +267,8 @@
       <t>
         Even if a signaling protocol does not include a capabilities discovery
         method, a user agent can provide an indication within the candidate information
-        that it supports Trickle ICE (e.g., in SDP this would be a token of "trickle" 
+        that it supports Trickle ICE, either at the session level or for every media 
+        stream at the media stream level (e.g., in SDP this would be a token of "trickle" 
         in the ice-options attribute).
       </t>
       <t>
@@ -1165,7 +1166,24 @@
       </figure>
     </section>
     <section title='IANA Considerations'>
-      <t>This specification requests no actions from IANA.</t>
+      <t>
+        IANA is requested to register the following ICE option in the "ICE
+        Options" sub-registry of the "Interactive Connectivity Establishment
+        (ICE) registry", following the procedures defined in
+        <xref target='RFC6336'/>.
+      </t>
+      <t>
+        <list style='hanging'>
+          <t hangText="ICE Option:">trickle</t>
+          <t hangText="Contact:">Emil Ivov, eivov@atlassian.com</t>
+          <t hangText="Change control:">IESG</t>
+          <t hangText="Description:">
+            An ICE option of "trickle" indicates support for incremental
+            communication of ICE candidates.
+          </t>
+          <t hangText="Reference:">RFC XXXX</t>
+        </list>
+      </t>
     </section>
     <section title='Security Considerations'>
       <t>
@@ -1184,7 +1202,7 @@
     <section title='Acknowledgements'>
      <t>   
         The authors would like to thank Bernard Aboba, Flemming Andreasen, 
-        Rajmohan Banavi, Taylor Brandstetter, Christer Holmberg, Ari Keranen,
+        Rajmohan Banavi, Taylor Brandstetter, Philipp Hancke, Christer Holmberg, Ari Keranen,
         Paul Kyzivat, Jonathan Lennox, Enrico Marocco, Pal Martinsen, Thomas Stach,
         Peter Thatcher, Martin Thomson, Dale R. Worley, and Brandon Williams 
         for their reviews and suggestions on improving this document. Thanks also
@@ -1201,18 +1219,18 @@
 <author initials='A' surname='Keranen' fullname='Ari Keranen'>
     <organization />
 </author>
-<author initials='A' surname='Keranen' fullname='Ari Keranen'>
+<author initials='C' surname='Holmberg' fullname='Christer Holmberg'>
     <organization />
 </author>
 <author initials='J' surname='Rosenberg' fullname='Jonathan Rosenberg'>
     <organization />
 </author>
-<date month='December' day='22' year='2016' />
+<date month='April' day='20' year='2017' />
 <abstract><t>This document describes a protocol for Network Address Translator (NAT) traversal for UDP-based multimedia.  This protocol is called Interactive Connectivity Establishment (ICE).  ICE makes use of the Session Traversal Utilities for NAT (STUN) protocol and its extension, Traversal Using Relay NAT (TURN).  This document obsoletes RFC 5245.</t></abstract>
 </front>
-<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-08' />
+<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-09' />
 <format type='TXT'
-        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-08.txt' />
+        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-09.txt' />
 </reference>
 
     </references>
@@ -1225,6 +1243,7 @@
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
       <?rfc include="reference.RFC.6120"?>
+      <?rfc include="reference.RFC.6336"?>
 <reference anchor='I-D.ietf-mmusic-trickle-ice-sip'>
 <front>
 <title>A Session Initiation Protocol (SIP) usage for Trickle ICE</title>
