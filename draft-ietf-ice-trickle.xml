@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-09'>
+     docName='draft-ietf-ice-trickle-10'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -267,9 +267,10 @@
       <t>
         Even if a signaling protocol does not include a capabilities discovery
         method, a user agent can provide an indication within the candidate information
-        that it supports Trickle ICE, either at the session level or for every media 
-        stream at the media stream level (e.g., in SDP this would be a token of "trickle" 
-        in the ice-options attribute).
+        that it supports Trickle ICE using a token of "trickle" in the ice-options 
+        attribute.  This token MUST be provided either at the session level or, if
+        at the media stream level, for every media stream (an agent MUST NOT specify
+        Trickle ICE support for some media streams but not others).
       </t>
       <t>
         Dedicated discovery semantics and half trickle are needed
