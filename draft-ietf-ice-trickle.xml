@@ -784,11 +784,10 @@
             </figure>
           </t>
           <t>
-            Case 3: If there is at least one pair in this column above the row of the
-            newly formed pair whose state is either Succeeded or Failed, set the
-            state to Waiting (e.g., this would be the case if the pair in column 5, 
-            row 1 succeeded and two newly formed pairs were placed in column 5, rows 3
-            and 4).
+            Case 3: If there is at least one Succeeded pair in this column above the 
+            row of the newly formed pair, set the state to Waiting (e.g., this would 
+            be the case if the pair in column 5, row 1 succeeded and two newly formed 
+            pairs were placed in column 5, rows 3 and 4).
           </t>
           <t>
             <figure title="Check List State with Newly Formed Pair, Case 3" anchor="fig-checklist-6">
