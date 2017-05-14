@@ -1476,6 +1476,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-10'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Minor editorial fixes.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-09'>
         <t>
           <list style='symbols'>
