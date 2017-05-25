@@ -1536,7 +1536,7 @@
         <t>
           <list style='symbols'>
             <t>
-              Addressed editorial feedback from chairs review.
+              Addressed editorial feedback from chairs' review.
             </t>
             <t>
               Clarified terminology regarding generations.
@@ -1572,15 +1572,6 @@
             </t>
             <t>
               Addressed various WG feedback.
-            </t>
-          </list>
-        </t>
-      </section>
-      <section title='Changes from draft-ietf-ice-trickle-03'>
-        <t>
-          <list style='symbols'>
-            <t>
-              Copy edit.
             </t>
           </list>
         </t>
