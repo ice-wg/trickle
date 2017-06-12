@@ -113,7 +113,7 @@
         run in parallel, they still need to respect the pacing
         requirements from <xref target="rfc5245bis"/>, which is likely to
         delay them even further. Some or all of these actions also
-        need be completed by the remote agent. Both agents would
+        need be completed by the responder. Both agents would
         next perform connectivity checks and only then would they be
         ready to begin streaming media.
       </t>
@@ -122,11 +122,11 @@
         establishment times and thus to a degraded user experience.
       </t>
       <t>
-        This document defines an alternative or supplementary mode of
+        This document defines a supplementary mode of
         operation for ICE implementations, known as "Trickle ICE",
         in which candidates can be exchanged incrementally. This enables
         ICE agents to exchange candidates as soon as an ICE session
-        has been initiated. Connectivity checks for a media
+        has been initiated and a candidate has become available. Connectivity checks for a media
         stream can also start as soon as the first candidates for that
         stream become available.
       </t>
@@ -186,24 +186,19 @@
       </t>
       <t>
         <list style="hanging">
-          <t hangText="Candidate Gatherer:">
-            A module used by an ICE agent to obtain local candidates.
-            Candidate gatherers use different mechanisms for
-            discovering local candidates, such as STUN and TURN. 
-          </t>
           <t hangText="Generation:">
             All of the candidates conveyed within an ICE session; these are the
             candidates that are associated with a specific local/remote ufrag
             pair (which will change on ICE restart, if any occurs).
           </t>
-          <t hangText="ICE Parameters:">
+          <t hangText="ICE Description:">
             Any session-related (as opposed to candidate-related) attributes 
             required to configure an ICE agent. These include but are not 
-            limited to the username fragment, password, and other options.
+            limited to the username fragment, password, and other attributes.
           </t>
           <t hangText="Trickled Candidates:">
-            Candidates that a Trickle ICE agent conveys after conveying initial 
-            ICE parameters or responding to initial ICE parameters, but within 
+            Candidates that a Trickle ICE agent conveys after conveying the initial 
+            ICE description or responding to the initial ICE description, but within 
             the same ICE session.  Trickled candidates can be conveyed in 
             parallel with candidate gathering and connectivity checks.
           </t>
@@ -213,19 +208,19 @@
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
             a full generation of candidates strictly before creating
-            and conveying the initial ICE parameters. Once conveyed, 
+            and conveying the initial ICE description. Once conveyed, 
             this candidate information can be
             processed by regular ICE agents, which do not require support
             for this specification. It also allows Trickle ICE capable
             responders to still gather candidates and perform
             connectivity checks in a non-blocking way, thus roughly
             providing "half" the advantages of Trickle ICE. The mechanism
-            is mostly meant for use in cases where the remote agent's support for Trickle
-            ICE cannot be confirmed prior to conveying the initial ICE parameters.
+            is mostly meant for use in cases where the responder's support for Trickle
+            ICE cannot be confirmed prior to conveying the initial ICE description.
           </t>
           <t hangText="Full Trickle:">
             The typical mode of operation for Trickle ICE agents, in which
-            the initial ICE parameters can include any number of candidates (even
+            the initial ICE description can include any number of candidates (even
             zero candidates) and does not need to include a full generation
             of candidates as in half trickle.
           </t>
@@ -258,7 +253,7 @@
         the half trickle procedure described in <xref target="half-trickle"/>.
       </t>
       <t>
-        Prior to conveying the initial ICE parameters, agents using signaling protocols
+        Prior to conveying the initial ICE description, agents using signaling protocols
         that support capabilities discovery can attempt to verify whether or 
         not the remote party supports Trickle ICE. If an agent determines 
         that the remote party does not support Trickle ICE, it MUST fall back 
@@ -266,7 +261,7 @@
       </t>
       <t>
         Even if a signaling protocol does not include a capabilities discovery
-        method, a user agent can provide an indication within the ICE parameters
+        method, a user agent can provide an indication within the ICE description
         that it supports Trickle ICE using a token of "trickle" in the ice-options 
         attribute.  This token MUST be provided either at the session level or, if
         at the media stream level, for every media stream (an agent MUST NOT specify
@@ -279,25 +274,25 @@
         agent can use full trickle for subsequent exchanges.
       </t>
     </section>
-    <section title='Conveying the Initial ICE Parameters' anchor="initial">
+    <section title='Conveying the Initial ICE Description' anchor="initial">
       <t>
-        An agent can start gathering candidates as soon as it has an
+        An initiator can start gathering candidates as soon as it has an
         indication that communication is imminent (e.g., a user interface
         cue or an explicit request to initiate a session). Unlike in
         regular ICE, in Trickle ICE implementations do not need to
         gather candidates in a blocking manner. Therefore, unless half
-        trickle is being used, agents SHOULD generate and transmit their
-        initial ICE parameters as early as possible, so that the remote
+        trickle is being used, the initiator SHOULD generate and transmit their
+        initial ICE description as early as possible, so that the remote
         party can start gathering and trickling candidates.
       </t>
       <t>
-        Trickle ICE agents MAY include any mix of candidates when conveying
-        initial ICE parameters. This includes the possibility of conveying ICE paramters that 
-        contain all the candidates the agent plans to use
-        (as in half trickle mode), conveying ICE parameters that contain only a 
+        An initiator MAY include any mix of candidates when conveying
+        the initial ICE description. This includes the possibility of conveying 
+        all the candidates the initiator plans to use
+        (as in half trickle mode), conveying only a 
         publicly-reachable IP address (e.g., a candidate at a media 
-        relay that is known to not be behind a firewall), or conveying ICE parameters 
-        with no candidates at all (in which case the initiator can obtain the 
+        relay that is known to not be behind a firewall), or conveying 
+        no candidates at all (in which case the initiator can obtain the 
         responder's initial candidate list sooner and the responder can begin 
         candidate gathering more quickly).
       </t>
@@ -308,55 +303,54 @@
         candidates as described under <xref target='check.lists'/>).
       </t>
     </section>
-    <section title='Receiving the Initial ICE Parameters' >
+    <section title='Responder Procedures' >
       <t>
-        When a responder receives initial ICE parameters, it will first check if
-        the ICE parameters or initiator indicates support for Trickle ICE as explained in
-        <xref target="disco"/>. If this is not the case, the agent MUST
-        process the ICE parameters according to regular ICE procedures 
+        When a responder receives the initial ICE description, it will first check if
+        the ICE description or initiator indicates support for Trickle ICE as explained in
+        <xref target="disco"/>. If this is not the case, the responder MUST
+        process the initial ICE description according to regular ICE procedures 
         <xref target="rfc5245bis"/> (or, if no ICE support is detected at all,
         according to relevant processing rules for the underlying signaling 
         protocol, such as offer/answer processing rules <xref target="RFC3264"/>).
       </t>
       <t>
         If support for Trickle ICE is
-        confirmed, an agent will automatically assume support for
-        regular ICE as well even if the support verification procedure
-        in <xref target="rfc5245bis"/> indicates otherwise. Specifically, 
+        confirmed, a responder will automatically assume support for
+        regular ICE as well. Specifically, 
         the rules from <xref target="rfc5245bis"/> would imply that ICE 
-        itself is not supported if the initial ICE parameters include no candidates;
+        itself is not supported if the initial ICE description includes no candidates;
         however, such a conclusion is not warranted if the 
         responder can confirm that the initiator supports Trickle ICE; in this case,
         fallback to <xref target="RFC3264"/> is not necessary.
       </t>
       <t>
-        If the initial ICE parameters do indicate support for Trickle ICE, the agent
+        If the initial ICE description indicates support for Trickle ICE, the responder
         will determine its role and start gathering and prioritizing
         candidates; while doing so, it will also respond by conveying
-        its own ICE parameters, so that both agents can start forming check
+        its own ICE description, so that both the initiator and the responder can start forming check
         lists and begin connectivity checks.
       </t>
       <section title="Conveying the Initial Response">
         <t>
-          An agent can respond to initial ICE parameters at any point while
-          gathering candidates. Here again the ICE parameters MAY contain any set of
+          A responder can respond to the initial ICE description at any point while
+          gathering candidates. Here again the ICE description MAY contain any set of
           candidates, including all candidates or no candidates. (The
-          benefit of including no candidates is to convey the ICE parameters as 
+          benefit of including no candidates is to convey the ICE description as 
           quickly as possible, so that both parties can consider the 
           overall session to be under active negotiation as soon as 
           possible.) 
         </t>
         <t>
           As noted in <xref target="disco"/>, in application protocols that use 
-          SDP the responder's ICE parameters can indicate support for Trickle ICE 
+          SDP the responder's ICE description can indicate support for Trickle ICE 
           by including a token of "trickle" in the ice-options attribute.
         </t>
       </section>
       <section title="Forming Check Lists and Beginning Connectivity
                       Checks" anchor="check.lists">
         <t>
-          After the initiator and responder exchange ICE parameters, and as soon as they have
-          obtained local and remote candidates, agents begin
+          After the initiator and responder exchange ICE descriptions, and as soon as they have
+          obtained local and remote candidates, both agents begin
           forming candidate pairs, computing candidate pair priorities,
           ordering candidate pairs, pruning duplicate pairs, and
           creating check lists according to regular ICE procedures
@@ -365,7 +359,7 @@
         <t>
           According to those procedures, in order for candidate pairing 
           to be possible and for duplicate candidates to be pruned, the 
-          candidates would need to be provided in the relevant ICE parameters.
+          candidates would need to be provided in the relevant ICE descriptions.
           Under Trickle ICE, check lists can be empty until 
           candidate pairs are conveyed or received. Therefore Trickle ICE agents 
           handle check lists and candidate pairing in a slightly different
@@ -392,9 +386,9 @@
         </t>
       </section>
     </section>
-    <section title="Receiving the Initial Answer">
+    <section title="Initiator Procedures">
       <t>
-        When processing initial ICE parameters from a responder, the initiator follows regular ICE
+        When processing the initial ICE description from a responder, the initiator follows regular ICE
         procedures to determine its role, after which it
         forms check lists (as described in <xref target="check.lists"/>)
         and begins connectivity checks.
@@ -411,7 +405,7 @@
       <section title="Scheduling Checks" anchor="scheduling-checks">
         <t>
           The ICE specification <xref target='rfc5245bis'/>, Section 5.1.4, 
-          requires that agents terminate the timer for a triggered 
+          requires that an agent will terminate the timer for a triggered 
           check in relation to an active check list once the agent
           has exhausted all frozen pairs in the check list.  This will
           not work with Trickle ICE, because more pairs will be
@@ -426,7 +420,7 @@
       <section title="Check List and Timer State Updates"
                anchor="state-updates">
         <t>
-          The ICE specification <xref target='rfc5245bis'/>, Section 6.2.5.4, 
+          The ICE specification <xref target='rfc5245bis'/>, Section 6.2.5.3.3, 
           requires that agents update check lists and timer states upon 
           completing a connectivity check transaction. During such an 
           update, regular ICE agents would set the state of a check list 
@@ -454,7 +448,7 @@
         <t>
           <list style="symbols">
             <t>
-              all candidate gatherers have completed and the agent
+              all candidate gathering has completed and the agent
               is not expecting to discover any new local candidates;
             </t>
             <t>
@@ -671,30 +665,9 @@
             Then, as the checks proceed (see Section 6.2.5.4 of
             <xref target="rfc5245bis"/>), for each pair 
             that enters the Succeeded state (denoted here by "S"),
-            the agent will unfreeze all pairs for the same media stream and
+            the agent will unfreeze all pairs for all media streams with the same
             foundation (e.g., if the pair in column 1, row 1 succeeds then
             the agent will unfreeze the pair in column 1, row 2). 
-          </t>
-          <t>
-            <figure title="Check List State after Succeeded Check" anchor="fig-checklist-2">
-              <artwork>
-<![CDATA[
-+-----------------+------+------+------+------+------+
-|                 |  f1  |  f2  |  f3  |  f4  |  f5  |
-+-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      |      |
-+-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
-+-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  F   |      |      |      |  W   |
-+-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  F   |      |      |      |  F   |
-+-----------------+------+------+------+------+------+
-]]>
-              </artwork>
-            </figure>
-          </t>
-          <t>
             ICE also specifies 
             that, if all the pairs in a media stream for one foundation are 
             unfrozen (e.g., column 1, rows 1 and 2 representing both components
@@ -824,11 +797,11 @@
         indication can be conveyed in the following ways:
         <list style='symbols'>
           <t>As part of an initiation request (which would typically be the case with 
-             initial ICE parameters for half trickle)</t>
+             the initial ICE description for half trickle)</t>
           <t>Along with the last candidate an agent can send for a stream</t>
           <t>As a standalone notification (e.g., after STUN Binding requests 
              or TURN Allocate requests to a server time out and the agent has 
-             no other active gatherers)</t>
+             is not actively gathering candidates)</t>
         </list>
       </t>
       <t>
@@ -854,7 +827,7 @@
       </t>
       <t>
         When conveying an end-of-candidates indication during trickling
-        (rather than as a part of initial ICE parameters or a response thereto), 
+        (rather than as a part of the initial ICE description or a response thereto), 
         it is the responsibility of the
         using protocol to define methods for relating the
         indication to one or more specific media streams.
@@ -863,7 +836,7 @@
         Receiving an end-of-candidates indication enables an agent to
         update check list states and, in case valid pairs do not exist
         for every component in every media stream, determine that ICE
-        processing has failed. It also enables agents to speed up the
+        processing has failed. It also enables an agent to speed up the
         conclusion of ICE processing when a candidate pair has been validated
         but it involves the use of lower-preference transports such as
         TURN. In such situations, an implementation MAY choose to wait
@@ -881,7 +854,7 @@
       </t>
       <t>
         When performing half trickle, an agent SHOULD convey an
-        end-of-candidates indication together with its initial ICE parameters unless
+        end-of-candidates indication together with its initial ICE description unless
         it is planning to potentially trickle additional candidates (e.g., in
         case the remote party turns out to support Trickle ICE).
       </t>
@@ -900,7 +873,7 @@
         This specification does not
         override regular ICE semantics for concluding ICE processing.
         Therefore, even if end-of-candidates indications are conveyed,
-        agents will still have to go through pair nomination. Also, if
+        an agent will still need to go through pair nomination. Also, if
         pairs have been nominated for components and media streams, ICE
         processing MAY still conclude even if end-of-candidates
         indications have not been received for all streams.
@@ -982,26 +955,26 @@
              anchor="subsequent">
       <t>
         Either agent MAY convey subsequent candidate information at any time allowed
-        by the signaling protocol in use. When this happens agents will use
+        by the signaling protocol in use. When this happens, agents will use
         <xref target="rfc5245bis"/> semantics to determine whether or not
         the new candidate information require an ICE restart.  If an ICE restart
-        occurs, the user agents can assume that Trickle ICE is still supported
+        occurs, the agents can assume that Trickle ICE is still supported
         if support was determined previously, and thus can engage in Trickle ICE 
-        behavior as they would in an initial exchange of ICE parameters where
+        behavior as they would in an initial exchange of ICE descriptions where
         support was determined through a capabilities discovery method.
       </t>
     </section>
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
              anchor="half-trickle">
       <t>
-        In half trickle mode, the initiator conveys initial ICE parameters
+        In half trickle mode, the initiator conveys the initial ICE description
         with a full generation of candidates. This ensures that the
-        ICE parameters can be processed by a regular ICE responder and is mostly
+        ICE description can be processed by a regular ICE responder and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
-        confirmed prior to conveying initial ICE parameters.  The initial ICE parameters 
+        confirmed prior to conveying the initial ICE description.  The initial ICE description 
         indicate support for Trickle ICE, which means the responder can
         respond with something less than a full generation of candidates and then 
-        trickle the rest.  Initial ICE parameters for half trickle would typically contain an
+        trickle the rest.  The initial ICE description for half trickle would typically contain an
         end-of-candidates indication, although this is not mandatory
         because if trickle support is confirmed then the initiator can
         choose to trickle additional candidates before it conveys an
@@ -1010,7 +983,7 @@
       <t>
         The half trickle mechanism can be used in cases where there is
         no way for an agent to verify in advance whether a remote
-        party supports Trickle ICE. Because the initial ICE parameters contain
+        party supports Trickle ICE. Because the initial ICE description contain
         a full generation of candidates, it can thus be handled by a regular
         ICE agent, while still allowing a Trickle ICE agent to use
         the optimization defined in this specification. This prevents
@@ -1020,8 +993,8 @@
       </t>
       <t>
         Use of half trickle is only necessary during an initial
-        exchange of ICE parameters. After both parties have received 
-        ICE parameters from their peer, they can each reliably
+        exchange of ICE descriptions. After both parties have received 
+        an ICE description from their peer, they can each reliably
         determine Trickle ICE support and use it for all subsequent
         exchanges.
       </t>
@@ -1064,7 +1037,7 @@
           <t>
             A signaling protocol MUST provide methods for incrementally
             conveying (i.e., "trickling") additional candidates after 
-            conveying the initial ICE parameters (see 
+            conveying the initial ICE description (see 
             <xref target='send-trickling'/>).
           </t>
           <t>
@@ -1199,7 +1172,7 @@
       <t>
         If the privacy implications of revealing host addresses on an
         endpoint device are a
-        concern, agents can generate ICE parameters that contain no
+        concern, agents can generate ICE descriptions that contain no
         candidates and then only trickle candidates that do not reveal
         host addresses (e.g., relayed candidates).
       </t>
@@ -1230,12 +1203,12 @@
 <author initials='J' surname='Rosenberg' fullname='Jonathan Rosenberg'>
     <organization />
 </author>
-<date month='April' day='20' year='2017' />
+<date month='May' day='26' year='2017' />
 <abstract><t>This document describes a protocol for Network Address Translator (NAT) traversal for UDP-based multimedia.  This protocol is called Interactive Connectivity Establishment (ICE).  ICE makes use of the Session Traversal Utilities for NAT (STUN) protocol and its extension, Traversal Using Relay NAT (TURN).  This document obsoletes RFC 5245.</t></abstract>
 </front>
-<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-09' />
+<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-10' />
 <format type='TXT'
-        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-09.txt' />
+        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-10.txt' />
 </reference>
 
     </references>
@@ -1379,7 +1352,7 @@
         potentially all ICE processing to fail.
       </t>
       <t>
-        A similar race condition would occur if the initial ICE parameters from
+        A similar race condition would occur if the initial ICE description from
         Alice contain only candidates that can be determined as
         unreachable from
         any of the candidates that Bob has gathered (e.g., this would be the
@@ -1408,7 +1381,7 @@
         </list>
       </t>
       <t>
-        After Bob's agent receives Alice's initial ICE parameters it would 
+        After Bob's agent receives Alice's initial ICE description it would 
         immediately start connectivity checks. It would also start gathering
         candidates, which would take a long time because of the unreachable
         STUN server. By the time Bob's answer is ready and conveyed to
@@ -1434,7 +1407,7 @@
       </t>
       <t>
         When performing full trickle, a full ICE implementation could
-        conveying initial ICE parameters or response thereto with no candidates. After receiving 
+        conveying the initial ICE description or response thereto with no candidates. After receiving 
         a response that
         identifies the remote agent as an ICE lite implementation, the
         initiator can choose to not trickle any additional
@@ -1476,6 +1449,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-11'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Mostly editorial fixes to address WGLC feedback.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-10'>
         <t>
           <list style='symbols'>
