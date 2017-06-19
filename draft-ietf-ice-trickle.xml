@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-11'>
+     docName='draft-ietf-ice-trickle-12'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -517,9 +517,9 @@
       <t>
         When candidates are trickled, each candidate MUST be delivered 
         to the receiving Trickle ICE implementation not more than once 
-        and in the same order it was conveyed. If the signaling protocol provides any
-        candidate retransmissions, they need to be hidden from the ICE 
-        implementation.
+        and in the same order it was conveyed. If the signaling protocol 
+        provides any candidate retransmissions, they need to be hidden 
+        from the ICE implementation.
       </t>
       <t>
         Also, candidate trickling needs to be correlated to a specific
