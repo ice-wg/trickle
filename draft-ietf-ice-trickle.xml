@@ -515,8 +515,8 @@
         candidates and instead rely on the discovery of peer reflexive ones).
       </t>
       <t>
-        When candidates are trickled, each candidate MUST be delivered 
-        to the receiving Trickle ICE implementation not more than once 
+        When candidates are trickled, the signaling protocol MUST deliver each 
+        candidate to the receiving Trickle ICE implementation not more than once 
         and in the same order it was conveyed. If the signaling protocol 
         provides any candidate retransmissions, they need to be hidden 
         from the ICE implementation.
@@ -903,7 +903,7 @@
         lists being marked as Failed.
       </t>
     </section>
-    <section title='Receiving an End-Of-Candidates Notification'
+    <section title='Receiving an End-Of-Candidates Indication'
              anchor="end-of-candidates.recv">
       <t>
         When an agent receives an end-of-candidates indication
