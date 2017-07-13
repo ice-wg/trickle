@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-12'>
+     docName='draft-ietf-ice-trickle-13'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -349,7 +349,7 @@
       <section title="Forming Check Lists and Beginning Connectivity
                       Checks" anchor="check.lists">
         <t>
-          After the initiator and responder exchange ICE descriptions, and as soon as they have
+          As soon as the agents have
           obtained local and remote candidates, both agents begin
           forming candidate pairs, computing candidate pair priorities,
           ordering candidate pairs, pruning duplicate pairs, and
@@ -361,7 +361,7 @@
           to be possible and for duplicate candidates to be pruned, the 
           candidates would need to be provided in the relevant ICE descriptions.
           Under Trickle ICE, check lists can be empty until 
-          candidate pairs are conveyed or received. Therefore Trickle ICE agents 
+          candidates are conveyed or received. Therefore Trickle ICE agents 
           handle check lists and candidate pairing in a slightly different
           way than regular ICE agents: the agents still create the check lists, but 
           they populate the check lists only after they actually have the candidate 
@@ -668,11 +668,6 @@
             the agent will unfreeze all pairs for all media streams with the same
             foundation (e.g., if the pair in column 1, row 1 succeeds then
             the agent will unfreeze the pair in column 1, rows 2, 3, and 4). 
-            ICE also specifies 
-            that, if all the pairs in a media stream for one foundation are 
-            unfrozen (e.g., column 1, rows 1 and 2 representing both components
-            for the audio stream), then all of the candidate pairs in the entire 
-            column are unfrozen (e.g., column 1, rows 3 and 4).
           </t>
           <t>
             <figure title="Check List State with Unfrozen Media Stream" anchor="fig-checklist-3">
@@ -707,7 +702,7 @@
             agent sets the state of the newly formed pair as described below.
           </t>
           <t>
-            Case 1: If the newly formed pair is the topmost pair in this column (i.e.
+            Case 1: If the newly formed pair is the topmost pair in its column (i.e.
             the topmost pair among all the check lists for this foundation), set 
             the state to Waiting (e.g., this would be the case if the newly formed pair 
             were placed in column 5, row 1).
@@ -732,7 +727,7 @@
             </figure>
           </t>
           <t> 
-            Case 2: If the pair immediately above the newly formed pair in this column 
+            Case 2: If the pair immediately above the newly formed pair in its column 
             is in the Succeeded state, set the state to Waiting (e.g., this would be 
             the case if the pair in column 5, row 1 succeeded and the newly formed pair 
             were placed in column 5, row 2);
@@ -757,7 +752,7 @@
             </figure>
           </t>
           <t>
-            Case 3: If there is at least one Succeeded pair in this column above the 
+            Case 3: If there is at least one Succeeded pair in its column above the 
             row of the newly formed pair, set the state to Waiting (e.g., this would 
             be the case if the pair in column 5, row 1 succeeded and two newly formed 
             pairs were placed in column 5, rows 3 and 4).
@@ -789,12 +784,14 @@
       <section title='Announcing End of Candidates'
              anchor="end-of-candidates">
       <t>
-        Once all candidate gathering is completed or expires for a 
-        specific media stream, the agent will generate an
-        "end-of-candidates" indication for that stream and convey it to
-        the remote agent via the signaling channel. The exact form of
-        the indication depends on the application protocol. The
-        indication can be conveyed in the following ways:
+        Once all candidate gathering is completed or expires for an
+        ICE session associated with a specific media stream, the agent will generate an
+        "end-of-candidates" indication for that session and convey it to
+        the remote agent via the signaling channel. Although the exact form of
+        the indication depends on the application protocol, the indication
+        MUST specify the generation (ufrag/pwd combination) so that an agent
+        can correlate the end-of-candidates indication with a particular ICE
+        session. The indication can be conveyed in the following ways:
         <list style='symbols'>
           <t>As part of an initiation request (which would typically be the case with 
              the initial ICE description for half trickle)</t>
@@ -1052,7 +1049,8 @@
           </t>
           <t>
             A signaling protocol MUST provide a way for parties to communicate the 
-            end-of-candidates indication (see <xref target='end-of-candidates'/>).
+            end-of-candidates indication, which MUST specify the particular ICE 
+            session to which the indication applies (see <xref target='end-of-candidates'/>).
           </t>
         </list>
       </t>
@@ -1181,7 +1179,7 @@
      <t>   
         The authors would like to thank Bernard Aboba, Flemming Andreasen, 
         Rajmohan Banavi, Taylor Brandstetter, Philipp Hancke, Christer Holmberg, Ari Keranen,
-        Paul Kyzivat, Jonathan Lennox, Enrico Marocco, Pal Martinsen, Thomas Stach,
+        Paul Kyzivat, Jonathan Lennox, Enrico Marocco, Pal Martinsen, Nils Ohlmeier, Thomas Stach,
         Peter Thatcher, Martin Thomson, Dale R. Worley, and Brandon Williams 
         for their reviews and suggestions on improving this document. Thanks also
         to Ari Keranen and Peter Thatcher for chairing the ICE Working Group.
@@ -1333,7 +1331,7 @@
             172.16/12 specified in <xref target="RFC1918"/>).
           </t>
           <t>
-            Alice conveys Bob the candidate 172.16.0.1 which also happens
+            Alice conveys to Bob the candidate 172.16.0.1 which also happens
             to correspond to an existing host on Bob's network.
           </t>
           <t>
@@ -1349,7 +1347,9 @@
         </list>
         At this point the check list only contains Failed candidates and
         the valid list is empty. This causes the media stream and
-        potentially all ICE processing to fail.
+        potentially all ICE processing to fail, even though if trickle agents
+        could subsequently convey candidates that
+        would cause previously empty check lists to become non-empty.
       </t>
       <t>
         A similar race condition would occur if the initial ICE description from
