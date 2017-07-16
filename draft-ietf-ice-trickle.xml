@@ -1449,6 +1449,20 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-12'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Specified that the end-of-candidates indication must
+              include the generation (ufrag/pwd) to enable association
+              with a particular ICE session.
+            </t>
+            <t>
+              Further editorial fixes to address WGLC feedback.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-11'>
         <t>
           <list style='symbols'>
