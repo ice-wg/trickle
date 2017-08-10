@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-13'>
+     docName='draft-ietf-ice-trickle-14'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -95,7 +95,7 @@
         The Interactive Connectivity Establishment (ICE) protocol
         <xref target="rfc5245bis"/> describes mechanisms for gathering
         candidates, prioritizing them, choosing default ones, exchanging
-        them with a remote party, pairing them, and ordering them into
+        them with a remote party, pairing them, and ordering the candidate pairs into
         check lists. Once all of these actions have been completed (and only
         then), the parties can begin a phase of connectivity
         checks and eventually select the pair of candidates that will be
@@ -151,7 +151,7 @@
         In addition to the basics of Trickle ICE, this document also
         describes how to discover support for Trickle ICE,
         how regular ICE processing needs to be modified when
-        building and updating check lists, and how Trickle ICE
+        forming and updating check lists, and how Trickle ICE
         implementations interoperate with agents that only
         implement regular ICE processing as defined in
         <xref target="rfc5245bis"/>.
@@ -360,15 +360,16 @@
           According to those procedures, in order for candidate pairing 
           to be possible and for duplicate candidates to be pruned, the 
           candidates would need to be provided in the relevant ICE descriptions.
-          Under Trickle ICE, check lists can be empty until 
+          By contrast, under Trickle ICE check lists can be empty until 
           candidates are conveyed or received. Therefore Trickle ICE agents 
           handle check lists and candidate pairing in a slightly different
-          way than regular ICE agents: the agents still create the check lists, but 
+          way than regular ICE agents: the agents still form the check lists, but 
           they populate the check lists only after they actually have the candidate 
-          pairs.
+          pairs.  Every check list is initially placed in the Running state, even
+          if there are not yet any candidate pairs in the check list.
         </t>
         <t>
-          A Trickle ICE agent initially considers all check lists to be
+          A Trickle ICE agent initially considers all candidate pairs in all check lists to be
           frozen.  It then inspects the first check list and attempts to 
           unfreeze all candidate pairs it has received so far that belong to the 
           first component on the first media stream (i.e., the first media
@@ -404,9 +405,9 @@
       </t>
       <section title="Scheduling Checks" anchor="scheduling-checks">
         <t>
-          The ICE specification <xref target='rfc5245bis'/>, Section 5.1.4, 
-          requires that an agent will terminate the timer for a triggered 
-          check in relation to an active check list once the agent
+          The ICE specification <xref target='rfc5245bis'/>, Section 5.1.4.2, 
+          specifies that an agent will terminate the timer for a triggered 
+          check in relation to a check list once the agent
           has exhausted all frozen pairs in the check list.  This will
           not work with Trickle ICE, because more pairs will be
           added to the check list incrementally.
@@ -461,27 +462,18 @@
         <t>
           When a check list is set to Failed as described above, regular ICE 
           requires the agent to update all other check lists, placing one pair 
-          from each check list into the Waiting state - effectively unfreezing 
-          all remaining check lists. However, under Trickle ICE other check 
+          from each check list into the Waiting state and thereby effectively placing 
+          all remaining check lists into the Running state.  However, under Trickle ICE other check 
           lists might still be empty at this point (because candidates have
           not yet been received), and following only the rules from regular
-          ICE would prevent the agent from unfreezing those check lists (because
+          ICE would prevent the agent from forming those check lists (because
           the state of a check list depends on the state of the candidate
-          pairs in that check list, but there are none yet). Therefore a Trickle 
-          ICE agent needs to monitor whether a check list is active or frozen 
-          independently of the state of the candidate pairs in the check list
-          (since there might not be any pairs yet).
-          With regard to empty check lists, by default a Trickle ICE agent MAY 
-          consider an empty check list to be either active or frozen.  When a 
-          Trickle ICE agent considers an empty check list to be frozen, during 
-          the candidate checking process it SHOULD change the check list to 
-          active if checking of another check list is completely finished (i.e., 
-          if every pair in the other check list is either Successful or Failed), 
-          if another check list has a valid candidate pair for all components,
-          or if it adds a candidate pair to the check list (because, in 
-          accordance with <xref target='cand-insert'/>, when inserting a new 
+          pairs in that check list, but there might not yet by any candidate pairs in a given check list). 
+          In accordance with the ICE specification <xref target='rfc5245bis'/>, Section 5.1.2.1,
+          a Trickle ICE agent considers an empty check list to be in the Running state;  
+          in accordance with <xref target='cand-insert'/>, when inserting a new 
           candidate pair into an empty check list, the agent sets the pair to a 
-          state of Waiting).
+          state of Waiting.
         </t>
       </section>
     </section>
