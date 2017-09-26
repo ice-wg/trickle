@@ -1441,6 +1441,17 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-13'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Removed independent monitoring of check list "states" of
+              frozen or active, since this is handled by placing a check
+              list in the Running state defined in ICE core.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-12'>
         <t>
           <list style='symbols'>
