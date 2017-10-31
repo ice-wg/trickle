@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-14'>
+     docName='draft-ietf-ice-trickle-15'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -186,24 +186,16 @@
       </t>
       <t>
         <list style="hanging">
+          <t hangText="Full Trickle:">
+            The typical mode of operation for Trickle ICE agents, in which
+            the initial ICE description can include any number of candidates (even
+            zero candidates) and does not need to include a full generation
+            of candidates as in half trickle.
+          </t>
           <t hangText="Generation:">
             All of the candidates conveyed within an ICE session; these are the
             candidates that are associated with a specific local/remote ufrag
             pair (which will change on ICE restart, if any occurs).
-          </t>
-          <t hangText="ICE Description:">
-            Any session-related (as opposed to candidate-related) attributes 
-            required to configure an ICE agent. These include but are not 
-            limited to the username fragment, password, and other attributes.
-          </t>
-          <t hangText="Trickled Candidates:">
-            Candidates that a Trickle ICE agent conveys after conveying the initial 
-            ICE description or responding to the initial ICE description, but within 
-            the same ICE session.  Trickled candidates can be conveyed in 
-            parallel with candidate gathering and connectivity checks.
-          </t>
-          <t hangText="Trickling:">
-            The act of conveying trickled candidates.
           </t>
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
@@ -218,11 +210,19 @@
             is mostly meant for use in cases where the responder's support for Trickle
             ICE cannot be confirmed prior to conveying the initial ICE description.
           </t>
-          <t hangText="Full Trickle:">
-            The typical mode of operation for Trickle ICE agents, in which
-            the initial ICE description can include any number of candidates (even
-            zero candidates) and does not need to include a full generation
-            of candidates as in half trickle.
+          <t hangText="ICE Description:">
+            Any session-related (as opposed to candidate-related) attributes 
+            required to configure an ICE agent. These include but are not 
+            limited to the username fragment, password, and other attributes.
+          </t>
+          <t hangText="Trickled Candidates:">
+            Candidates that a Trickle ICE agent conveys after conveying the initial 
+            ICE description or responding to the initial ICE description, but within 
+            the same ICE session.  Trickled candidates can be conveyed in 
+            parallel with candidate gathering and connectivity checks.
+          </t>
+          <t hangText="Trickling:">
+            The act of conveying trickled candidates.
           </t>
         </list>
       </t>
@@ -405,7 +405,7 @@
       </t>
       <section title="Scheduling Checks" anchor="scheduling-checks">
         <t>
-          The ICE specification <xref target='rfc5245bis'/>, Section 5.1.4.2, 
+          The ICE specification <xref target='rfc5245bis'/>, Section 6.1.4.2, 
           specifies that an agent will terminate the timer for a triggered 
           check in relation to a check list once the agent
           has exhausted all frozen pairs in the check list.  This will
@@ -421,7 +421,7 @@
       <section title="Check List and Timer State Updates"
                anchor="state-updates">
         <t>
-          The ICE specification <xref target='rfc5245bis'/>, Section 6.2.5.3.3, 
+          The ICE specification <xref target='rfc5245bis'/>, Section 7.2.5.3.3, 
           requires that agents update check lists and timer states upon 
           completing a connectivity check transaction. During such an 
           update, regular ICE agents would set the state of a check list 
@@ -469,7 +469,7 @@
           ICE would prevent the agent from forming those check lists (because
           the state of a check list depends on the state of the candidate
           pairs in that check list, but there might not yet by any candidate pairs in a given check list). 
-          In accordance with the ICE specification <xref target='rfc5245bis'/>, Section 5.1.2.1,
+          In accordance with the ICE specification <xref target='rfc5245bis'/>, Section 6.1.2.1,
           a Trickle ICE agent considers an empty check list to be in the Running state;  
           in accordance with <xref target='cand-insert'/>, when inserting a new 
           candidate pair into an empty check list, the agent sets the pair to a 
@@ -626,7 +626,7 @@
           </t>
           <t>
             When an agent commences ICE processing,
-            in accordance with Section 5.1.2.6 of
+            in accordance with Section 6.1.2.6 of
             <xref target="rfc5245bis"/> 
             it will unfreeze (i.e., place in the Waiting 
             state) the topmost candidate pair in every column (i.e., the
@@ -654,7 +654,7 @@
             </figure>
           </t>
           <t>
-            Then, as the checks proceed (see Section 6.2.5.4 of
+            Then, as the checks proceed (see Section 7.2.5.4 of
             <xref target="rfc5245bis"/>), for each pair 
             that enters the Succeeded state (denoted here by "S"),
             the agent will unfreeze all pairs for all media streams with the same
@@ -932,7 +932,7 @@
                  anchor="concluding.ice">
       <t>
         This specification does not directly modify the procedures
-        for ending ICE processing described in Section 7 of
+        for ending ICE processing described in Section 8 of
         <xref target="rfc5245bis"/>, and Trickle ICE implementations 
         follow the same rules.
       </t>
@@ -1441,6 +1441,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-14'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Minor modifications to track changes to ICE core.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-13'>
         <t>
           <list style='symbols'>
