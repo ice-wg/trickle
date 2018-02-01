@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-15'>
+     docName='draft-ietf-ice-trickle-16'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -62,18 +62,11 @@
       </address>
     </author>
     <author initials="P." surname="Saint-Andre" fullname="Peter Saint-Andre">
-      <organization>Jabber.org</organization>
+      <organization>Mozilla</organization>
       <address>
-        <postal>
-          <street>P.O. Box 787</street>
-          <city>Parker</city>
-          <region>CO</region>
-          <code>80134</code>
-          <country>USA</country>
-        </postal>
         <phone>+1 720 256 6756</phone>
-        <email>peter@jabber.org</email>
-        <uri>https://www.jabber.org/</uri>
+        <email>stpeter@mozilla.com</email>
+        <uri>https://www.mozilla.com/</uri>
       </address>
     </author>
     <date />
@@ -260,12 +253,17 @@
         to using regular ICE or abandon the entire session.
       </t>
       <t>
-        Even if a signaling protocol does not include a capabilities discovery
-        method, a user agent can provide an indication within the ICE description
-        that it supports Trickle ICE using a token of "trickle" in the ice-options 
-        attribute.  This token MUST be provided either at the session level or, if
-        at the media stream level, for every media stream (an agent MUST NOT specify
-        Trickle ICE support for some media streams but not others).
+        Even if a signaling protocol does not include a capabilities discovery 
+        method, a user agent can provide an indication within the ICE description 
+        that it supports Trickle ICE by communicating an ICE option of 'trickle'.  
+        This token MUST be provided either at the session level or, if at the media 
+        stream level, for every media stream (an agent MUST NOT specify Trickle ICE 
+        support for some media streams but not others).
+
+        NOTE: The encoding of the 'trickle' ICE option, and the message(s) used to 
+        carry it to the peer, are protocol specific.  The encoding for the Session 
+        Description Protocol (SDP) <xref target='RFC4566'/> is defined in
+        <xref target='I-D.ietf-mmusic-trickle-ice-sip'/>.
       </t>
       <t>
         Dedicated discovery semantics and half trickle are needed
@@ -281,9 +279,10 @@
         cue or an explicit request to initiate a session). Unlike in
         regular ICE, in Trickle ICE implementations do not need to
         gather candidates in a blocking manner. Therefore, unless half
-        trickle is being used, the initiator SHOULD generate and transmit their
-        initial ICE description as early as possible, so that the remote
-        party can start gathering and trickling candidates.
+        trickle is being used, the user experience is improved if the 
+        initiator generates and transmits their initial ICE description 
+        as early as possible (thus enabling the remote party to start 
+        gathering and trickling candidates).
       </t>
       <t>
         An initiator MAY include any mix of candidates when conveying
@@ -321,7 +320,7 @@
         itself is not supported if the initial ICE description includes no candidates;
         however, such a conclusion is not warranted if the 
         responder can confirm that the initiator supports Trickle ICE; in this case,
-        fallback to <xref target="RFC3264"/> is not necessary.
+        fallback to non-ICE processing rules is not necessary.
       </t>
       <t>
         If the initial ICE description indicates support for Trickle ICE, the responder
@@ -943,7 +942,8 @@
     <section title='Subsequent Exchanges'
              anchor="subsequent">
       <t>
-        Either agent MAY convey subsequent candidate information at any time allowed
+        Before conveying an end-of-candidates indication, 
+        either agent MAY convey subsequent candidate information at any time allowed
         by the signaling protocol in use. When this happens, agents will use
         <xref target="rfc5245bis"/> semantics to determine whether or not
         the new candidate information require an ICE restart.  If an ICE restart
@@ -1062,11 +1062,11 @@
         To achieve this, when trickling candidates, agents MUST respect the 
         order in which the components and streams appear (implicitly or 
         explicitly) as they have been negotiated by means of the relevant 
-        candidate information.  Therefore a candidate for a specific component 
-        MUST NOT be conveyed prior to candidates for other components within 
-        the same foundation. In addition, candidates MUST be paired, 
-        following the procedures in <xref target='cand-insert'/>, in the 
-        same order they are conveyed.
+        candidate information. Therefore candidates for a given component 
+        MUST NOT be conveyed prior to candidates for a component with a 
+        lower ID number within the same foundation. In addition, candidates 
+        MUST be paired, following the procedures in <xref target='cand-insert'/>, 
+        in the same order they are conveyed.
       </t>
       <t>
         For example, the following SDP description contains two
@@ -1093,9 +1093,9 @@
 ]]>
           </artwork>
         </figure>
-        For this candidate information the RTCP host candidate MUST NOT be conveyed
+        For this candidate information the RTCP host candidate would not be conveyed
         prior to the RTP host candidate. Similarly the RTP server
-        reflexive candidate MUST be conveyed together with or prior to the
+        reflexive candidate would be conveyed together with or prior to the
         RTCP server reflexive candidate.
       </t>
       <t>
@@ -1143,7 +1143,7 @@
       <t>
         <list style='hanging'>
           <t hangText="ICE Option:">trickle</t>
-          <t hangText="Contact:">Emil Ivov, eivov@atlassian.com</t>
+          <t hangText="Contact:">IESG, iesg@ietf.org</t>
           <t hangText="Change control:">IESG</t>
           <t hangText="Description:">
             An ICE option of "trickle" indicates support for incremental
