@@ -1443,6 +1443,15 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-15'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Adjustments to address AD review feedback.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-14'>
         <t>
           <list style='symbols'>
