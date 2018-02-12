@@ -1401,7 +1401,7 @@
       </t>
       <t>
         When performing full trickle, a full ICE implementation could
-        conveying the initial ICE description or response thereto with no candidates. After receiving 
+        convey the initial ICE description or response thereto with no candidates. After receiving 
         a response that
         identifies the remote agent as an ICE lite implementation, the
         initiator can choose to not trickle any additional
