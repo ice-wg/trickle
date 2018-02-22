@@ -1164,8 +1164,9 @@
       </t>
       <t>
         If the privacy implications of revealing host addresses on an
-        endpoint device are a
-        concern, agents can generate ICE descriptions that contain no
+        endpoint device are a concern (see for example the discussion
+        in <xref target='I-D.ietf-rtcweb-ip-handling'/> and in Section 19
+        of <xref target="rfc5245bis"/>), agents can generate ICE descriptions that contain no
         candidates and then only trickle candidates that do not reveal
         host addresses (e.g., relayed candidates).
       </t>
@@ -1238,6 +1239,22 @@
 <seriesInfo name='Internet-Draft' value='draft-ietf-mmusic-trickle-ice-sip-13' />
 <format type='TXT'
         target='http://www.ietf.org/internet-drafts/draft-ietf-mmusic-trickle-ice-sip-13.txt' />
+</reference>
+<reference anchor='I-D.ietf-rtcweb-ip-handling'>
+<front>
+<title>WebRTC IP Address Handling Requirements</title>
+<author initials='J' surname='Uberti' fullname='Justin Uberti'>
+    <organization />
+</author>
+<author initials='G' surname='Shieh' fullname='Guo-wei Shieh'>
+    <organization />
+</author>
+<date month='July' day='3' year='2017' />
+<abstract><t>This document provides information and requirements for how IP addresses should be handled by WebRTC implementations.</t></abstract>
+</front>
+<seriesInfo name='Internet-Draft' value='draft-ietf-rtcweb-ip-handling-04' />
+<format type='TXT'
+        target='http://www.ietf.org/internet-drafts/draft-ietf-rtcweb-ip-handling-04.txt' />
 </reference>
       <reference anchor="XEP-0176">
         <front>
