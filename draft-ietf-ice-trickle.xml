@@ -430,10 +430,50 @@
         For the most part, Trickle ICE agents perform connectivity
         checks following regular ICE procedures. However, the fact that
         gathering and communicating candidates is asynchronous 
-        in Trickle ICE imposes several changes.
+        in Trickle ICE results in several differences.
       </t>
+      <section title='Scheduling Checks' anchor='checks-sched'>
+        <t>
+          As specified in <xref target='rfc5245bis'/>, whenever timer 
+          Ta fires, only check lists in the Running state will be picked 
+          in order to check for candidate pairs for which connectivity 
+          checks are scheduled.
+        </t>
+        <t>
+          Therefore, a Trickle ICE agent MUST keep each check list in 
+          the Running state as long as it expects to use pairs to be 
+          incrementally added to the check list. After that, the check 
+          list state is set according to the procedures in
+          <xref target='rfc5245bis'/>.
+        </t>
+      </section>
+      <section title='Empty Check Lists' anchor='checks-empty'>
+        <t>
+          A Trickle ICE agent might create a check list that initially does not 
+          contain any candidate pairs because they will be incrementally added 
+          as they are trickled (this scenario does not arise with non-trickle 
+          agents, because all candidate pairs are known when the agent creates 
+          the check list set) . Such a check list is referred to as an "empty 
+          check list". Similar to other check lists, the state of an empty
+          check list is initially set to Running, in accordance with the ICE 
+          specification <xref target='rfc5245bis'/>, Section 6.1.2.1.
+        </t>
+        <t>
+          Whenever timer Ta fires, and an empty check list is picked, no action 
+          is performed for the list. Without waiting for timer Ta to expire 
+          again, the agent selects the next check list in the Running state, 
+          in accordance with the ICE specification <xref target='rfc5245bis'/>, 
+          Section 6.1.4.2.
+        </t>
+        <t>
+          In accordance with <xref target='cand-insert'/>, when inserting a 
+          new candidate pair into an empty check list, the agent sets the pair 
+          to a state of Waiting.
+        </t>
+      </section>
+      <section title='Setting Check List State to Failed' anchor='checks-failed'>
       <t>
-        First, the ICE specification <xref target='rfc5245bis'/>, Section 7.2.5.3.3, 
+        The ICE specification <xref target='rfc5245bis'/>, Section 7.2.5.3.3, 
         requires that agents update check lists and timer states upon 
         completing a connectivity check transaction. During such an 
         update, regular ICE agents would set the state of a check list 
@@ -470,17 +510,6 @@
             <xref target="end-of-candidates"/>.
           </t>
         </list>
-      </t>
-      <t>
-        Second, a Trickle ICE agent will form check lists even if a given
-        check list does not yet have any candidates in it; in accordance with 
-        the ICE specification <xref target='rfc5245bis'/>, Section 6.1.2.1, a 
-        Trickle ICE agent considers an empty check list to be in the Running state.
-      </t>
-      <t>
-        Third, in accordance with <xref target='cand-insert'/>, when inserting a new 
-        candidate pair into an empty check list, the agent sets the pair to a 
-        state of Waiting.
       </t>
     </section>
     <section title='Discovering and Conveying Additional Local Candidates'
@@ -629,7 +658,8 @@
             for audio). Each column represents one foundation. Each cell 
             represents one candidate pair. In the foregoing table, "F" stands 
             for "frozen"; in the tables below, "W" stands for "waiting" and
-            "S" stands for "succeeded".
+            "S" stands for "succeeded"; in addition, "^^" is used to notate 
+            newly-added candidate pairs.
           </t>
           <t>
             When an agent commences ICE processing,
@@ -679,9 +709,9 @@
 +-----------------+------+------+------+------+------+
 | m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      |  W   |
+| m3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      |  F   |
+| m4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -713,7 +743,7 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  W   |
+| m1 (Audio.RTP)  |  S   |  W   |  W   |      | ^W^  |
 +-----------------+------+------+------+------+------+
 | m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
@@ -740,7 +770,7 @@
 +-----------------+------+------+------+------+------+
 | m1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
+| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   | ^W^  |
 +-----------------+------+------+------+------+------+
 | m3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
@@ -767,9 +797,9 @@
 +-----------------+------+------+------+------+------+
 | m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      |  W   |
+| m3 (Video.RTP)  |  W   |      |      |      | ^W^  |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      |  W   |
+| m4 (Video.RTCP) |  W   |      |      |      | ^W^  |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
