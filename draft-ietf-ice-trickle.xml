@@ -218,10 +218,8 @@
             of candidates as in half trickle.
           </t>
           <t hangText="Generation:">
-            All of the candidates conveyed within an ICE session; these are the
-            candidates that are associated with a specific local/remote Username
-            Fragment and Password combination (which will change on ICE restart, 
-            if any occurs).
+            All of the candidates conveyed within an ICE session (as defined
+            in <xref target="rfc5245bis"/>).
           </t>
           <t hangText="Half Trickle:">
             A Trickle ICE mode of operation where the initiator gathers
