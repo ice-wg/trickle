@@ -81,97 +81,61 @@
       <t>
         This document describes "Trickle ICE", an extension to the Interactive
         Connectivity Establishment (ICE) protocol that enables ICE agents
-        to send and receive candidates incrementally rather than
-        exchanging complete lists. With such incremental provisioning,
-        ICE agents can begin connectivity checks while they are still
-        gathering candidates and considerably shorten the time necessary
-        for ICE processing to complete.
+        to begin connectivity checks while they are still gathering 
+        candidates, by incrementally "trickling" candidates over time. 
+        This method can considerably accelerate the process of establishing 
+        a communication session.
       </t>
     </abstract>
   </front>
   <middle>
     <section title='Introduction'>
       <t>
-        The Interactive Connectivity Establishment (ICE) protocol
-        <xref target="rfc5245bis"/> describes mechanisms for gathering
-        candidates, prioritizing them, choosing default ones, exchanging
-        them with a remote party, pairing them, and ordering the candidate pairs into
-        check lists. Once all of these actions have been completed (and only
-        then), the parties can begin a phase of connectivity
-        checks and eventually select the pair of candidates that will be
-        used in a media session or for a given media stream.
+        The Interactive Connectivity Establishment (ICE) protocol 
+        <xref target="rfc5245bis"/> describes how an ICE agent 
+        gathers candidates, exchanges candidates with a peer ICE 
+        agent, and creates candidate pairs. Once the pairs have been 
+        created, the ICE agent will perform connectivity checks, and 
+        eventually nominate and select pairs that will be used for 
+        sending and receiving data within a communication session.
       </t>
       <t>
-        Although the sequence described above has the advantage of being 
-        relatively straightforward to implement and debug once deployed, 
-        it can also take quite a bit of time to complete.
-        Candidate gathering often involves things like querying
-        <xref target="RFC5389">STUN</xref> servers
-        and allocating relayed candidates at
-        <xref target="RFC5766">TURN</xref> servers. All of these actions can
-        be delayed for a noticeable amount of time; although they can be
-        run in parallel, they still need to respect the pacing
-        requirements from <xref target="rfc5245bis"/>, which is likely to
-        delay them even further. Some or all of these actions also
-        need be completed by the responder. Both agents would
-        next perform connectivity checks and only then would they be
-        ready to begin streaming media.
+        Following the procedures in <xref target="rfc5245bis"/> can 
+        lead to somewhat lengthy session establishment times, because 
+        candidate gathering often involves querying STUN servers 
+        <xref target="RFC5389"/> and allocating relayed candidates using 
+        TURN servers <xref target="RFC5766"/>. Although many ICE procedures 
+        can be completed in parallel, the pacing requirements from 
+        <xref target="rfc5245bis"/> still need to be followed.
       </t>
       <t>
-        These factors can lead to relatively lengthy session
-        establishment times and thus to a degraded user experience.
+        This document defines a supplementary mode of ICE operation, 
+        "Trickle ICE", in which candidates can be exchanged 
+        incrementally as soon as they become available (and simultaneously 
+        with the gathering of other candidates). Connectivity checks can 
+        also start as soon as candidate pairs have been created. Because 
+        Trickle ICE enables candidate gathering and connectivity checks
+        to be done in parallel, the method can considerably accelerate
+        the process of establishing a communication session.
       </t>
       <t>
-        This document defines a supplementary mode of
-        operation for ICE implementations, known as "Trickle ICE",
-        in which candidates can be exchanged incrementally. This enables
-        ICE agents to exchange candidates as soon as an ICE session
-        has been initiated and a candidate has become available. Connectivity checks for a media
-        stream can also start as soon as the first candidates for that
-        stream become available.
+        This document also defines how to discover support for
+        Trickle ICE, how the procedures in <xref target="rfc5245bis"/> are 
+        modified or supplemented when using Trickle ICE, and how a Trickle 
+        ICE agent can interoperate with an ICE agent compliant to 
+        <xref target="rfc5245bis"/>.
       </t>
       <t>
-        Trickle ICE can reduce session establishment times in cases
-        where connectivity is confirmed for the first exchanged
-        candidates (e.g., where candidates for one of the agents
-        are directly reachable from the second agent, such as 
-        candidates at a media relay). Even when this is
-        not the case, performing candidate gathering for both agents and
-        connectivity checks in parallel can considerably
-        shorten ICE processing times.
-      </t>
-      <t>
-        It is worth noting that there is quite a bit of operational 
-        experience with the Trickle ICE technique, going back as far as
-        2005 (when the XMPP Jingle extension defined a "dribble mode" as
-        specified in <xref target="XEP-0176"/>); this document incorporates 
-        feedback from those who have implemented and deployed the technique.
-      </t>
-      <t>
-        In addition to the basics of Trickle ICE, this document also
-        describes how to discover support for Trickle ICE,
-        how regular ICE processing needs to be modified when
-        forming and updating check lists, and how Trickle ICE
-        implementations interoperate with agents that only
-        implement regular ICE processing as defined in
-        <xref target="rfc5245bis"/>.  Unless otherwise noted herein,
-        the procedures defined in <xref target="rfc5245bis"/> apply
-        to Trickle ICE agents as well.
-      </t>
-      <t>
-        This specification does not define the usage of Trickle ICE with any
-        specific signaling protocol (however, see 
-        <xref target="I-D.ietf-mmusic-trickle-ice-sip"/> for usage with SIP
-        <xref target='RFC3261'/> 
-        and <xref target='XEP-0176'/> for usage with XMPP <xref target='RFC6120'/>).
-        Similarly, it does not define Trickle ICE in
-        terms of the Session Description Protocol (SDP) <xref target='RFC4566'/>
-        or the offer/answer model <xref target='RFC3264'/> because 
-        the technique can be and already is used in application protocols 
-        that are not tied to SDP or to offer/answer semantics.
-        However, because SDP and the offer/answer model are familiar to most
-        readers of this specification, some examples in this document use those
-        particulars in order to explain the underlying concepts.
+        This document does not define any protocol-specific usage of Trickle 
+        ICE. Instead, protocol-specific details for Trickle ICE are defined 
+        in separate usage documents. Examples of such documents are 
+        <xref target="I-D.ietf-mmusic-trickle-ice-sip"/> (which defines usage 
+        with the Session Initiation Protocol (SIP) <xref target='RFC3261'/> 
+        and the Session Description Protocol <xref target='RFC3261'/>) and 
+        <xref target='XEP-0176'/> (which defines usage with XMPP 
+        <xref target='RFC6120'/>). However, some of the examples in the 
+        document use SDP and the offer/answer model <xref target='RFC3264'/> 
+        to explain the underlying concepts.
       </t>
       <t>
         The following diagram illustrates a successful Trickle ICE exchange with a
@@ -196,6 +160,13 @@
 ]]>
         </artwork>
       </figure>
+      <t>
+        There is quite a bit of operational experience with the technique behind 
+        Trickle ICE, going back as far as 2005 (when the XMPP Jingle extension 
+        defined a "dribble mode" as specified in <xref target='XEP-0176'/>); this 
+        document incorporates feedback from those who have implemented and 
+        deployed the technique over the years.
+      </t>
     </section>
     <section title="Terminology">
       <t>
@@ -222,16 +193,16 @@
             in <xref target="rfc5245bis"/>).
           </t>
           <t hangText="Half Trickle:">
-            A Trickle ICE mode of operation where the initiator gathers
+            A Trickle ICE mode of operation in which the initiator gathers
             a full generation of candidates strictly before creating
             and conveying the initial ICE description. Once conveyed, 
             this candidate information can be
             processed by regular ICE agents, which do not require support
-            for this specification. It also allows Trickle ICE capable
+            for Trickle ICE. It also allows Trickle ICE capable
             responders to still gather candidates and perform
-            connectivity checks in a non-blocking way, thus roughly
-            providing "half" the advantages of Trickle ICE. The mechanism
-            is mostly meant for use in cases where the responder's support for Trickle
+            connectivity checks in a non-blocking way, thus providing roughly 
+            "half" the advantages of Trickle ICE. The half trickle mechanism
+            is mostly meant for use when the responder's support for Trickle
             ICE cannot be confirmed prior to conveying the initial ICE description.
           </t>
           <t hangText="ICE Description:">
@@ -246,7 +217,13 @@
             parallel with candidate gathering and connectivity checks.
           </t>
           <t hangText="Trickling:">
-            The act of conveying trickled candidates.
+            The act of incrementally conveying trickled candidates.
+          </t>
+          <t hangText="Empty Check List:">
+            A check list that initially does not contain any candidate pairs 
+            because they will be incrementally added as they are trickled.
+           (This scenario does not arise with a regular ICE agent, because all 
+           candidate pairs are known when the agent creates the check list set).
           </t>
         </list>
       </t>
@@ -254,8 +231,8 @@
     <section title='Determining Support for Trickle ICE' anchor="disco">
       <t>
         To fully support Trickle ICE, applications
-        SHOULD incorporate one of the following mechanisms to enable implementations
-        to determine whether Trickle ICE is supported:
+        SHOULD incorporate one of the following mechanisms so that implementations
+        can determine whether Trickle ICE is supported:
       </t>
       <t>
         <list style='numbers'>
@@ -287,13 +264,13 @@
         Even if a signaling protocol does not include a capabilities discovery 
         method, a user agent can provide an indication within the ICE description 
         that it supports Trickle ICE by communicating an ICE option of 'trickle'.  
-        This token MUST be provided either at the session level or, if at the media 
-        stream level, for every media stream (an agent MUST NOT specify Trickle ICE 
-        support for some media streams but not others).
+        This token MUST be provided either at the session level or, if at the data 
+        stream level, for every data stream (an agent MUST NOT specify Trickle ICE 
+        support for some data streams but not others).
 
-        NOTE: The encoding of the 'trickle' ICE option, and the message(s) used to 
-        carry it to the peer, are protocol specific.  The encoding for the Session 
-        Description Protocol (SDP) <xref target='RFC4566'/> is defined in
+        Note: The encoding of the 'trickle' ICE option, and the message(s) used to 
+        carry it to the peer, are protocol specific; for instance, the encoding for 
+        the Session Description Protocol (SDP) <xref target='RFC4566'/> is defined in
         <xref target='I-D.ietf-mmusic-trickle-ice-sip'/>.
       </t>
       <t>
@@ -319,8 +296,8 @@
         An initiator MAY include any mix of candidates when conveying
         the initial ICE description. This includes the possibility of conveying 
         all the candidates the initiator plans to use
-        (as in half trickle mode), conveying only a 
-        publicly-reachable IP address (e.g., a candidate at a media 
+        (as in half trickle), conveying only a 
+        publicly-reachable IP address (e.g., a candidate at a data 
         relay that is known to not be behind a firewall), or conveying 
         no candidates at all (in which case the initiator can obtain the 
         responder's initial candidate list sooner and the responder can begin 
@@ -328,9 +305,10 @@
       </t>
       <t>
         Methods for calculating priorities and foundations, as well as 
-        determining redundancy of candidates, work just as with regular
-        ICE (with the exception of pruning of duplicate peer reflexive
-        candidates as described under <xref target='check.lists'/>).
+        determining redundancy of candidates, work just as in regular
+        ICE <xref target="rfc5245bis"/> (with the exception of pruning of 
+        duplicate peer reflexive candidates as described under 
+        <xref target='checks-form'/>).
       </t>
     </section>
     <section title='Responder Procedures' >
@@ -350,7 +328,7 @@
         the rules from <xref target="rfc5245bis"/> would imply that ICE 
         itself is not supported if the initial ICE description includes no candidates;
         however, such a conclusion is not warranted if the 
-        responder can confirm that the initiator supports Trickle ICE; in this case,
+        responder can confirm that the initiator supports Trickle ICE, in which case
         fallback to non-ICE processing rules is not necessary.
       </t>
       <t>
@@ -363,7 +341,7 @@
       <section title="Conveying the Initial Response">
         <t>
           A responder can respond to the initial ICE description at any point while
-          gathering candidates. Here again the ICE description MAY contain any set of
+          gathering candidates. The ICE description in the response MAY contain any set of
           candidates, including all candidates or no candidates. (The
           benefit of including no candidates is to convey the ICE description as 
           quickly as possible, so that both parties can consider the 
@@ -376,52 +354,12 @@
           by including a token of "trickle" in the ice-options attribute.
         </t>
       </section>
-      <section title="Forming Check Lists and Beginning Connectivity
-                      Checks" anchor="check.lists">
-        <t>
-          As soon as the agents have
-          obtained local and remote candidates, both agents begin
-          forming candidate pairs, computing candidate pair priorities,
-          ordering candidate pairs, pruning duplicate pairs, and
-          creating check lists according to regular ICE procedures
-          <xref target="rfc5245bis"/>. 
-        </t>
-        <t>
-          According to those procedures, in order for candidate pairing 
-          to be possible and for duplicate candidates to be pruned, the 
-          candidates would need to be provided in the relevant ICE descriptions.
-          By contrast, under Trickle ICE check lists can be empty until 
-          candidates are conveyed or received. Therefore Trickle ICE agents 
-          handle check lists and candidate pairing in a slightly different
-          way than regular ICE agents: the agents still form the check lists, but 
-          they populate the check lists only after they actually have the candidate 
-          pairs.  Every check list is initially placed in the Running state, even
-          if there are not yet any candidate pairs in the check list.
-        </t>
-        <t>
-          A Trickle ICE agent initially considers all candidate pairs in all check lists to be
-          frozen.  It then inspects the first check list and attempts to 
-          unfreeze all candidate pairs it has received so far that belong to the 
-          first component on the first media stream (i.e., the first media
-          stream that was reported to the ICE implementation from the
-          using application). If that first component of the first media stream
-          does not contain candidates for one or more of the currently known 
-          pair foundations, and if candidate pairs already exist for that 
-          foundation in one of the following components or media streams, then 
-          the agent unfreezes the first of those candidate pairs.
-        </t>
-        <t>
-          With regard to pruning of duplicate candidate pairs, a Trickle ICE
-          agent SHOULD follow a policy of keeping the higher priority
-          candidate unless it is peer reflexive.
-        </t>
-      </section>
     </section>
     <section title="Initiator Procedures">
       <t>
         When processing the initial ICE description from a responder, the initiator follows regular ICE
         procedures to determine its role, after which it
-        forms check lists (as described in <xref target="check.lists"/>)
+        forms check lists (as described in <xref target="checks-form"/>)
         and begins connectivity checks.
       </t>
     </section>
@@ -432,16 +370,40 @@
         gathering and communicating candidates is asynchronous 
         in Trickle ICE results in several differences.
       </t>
+      <section title="Forming Check Lists and Beginning Connectivity
+                      Checks" anchor="checks-form">
+        <t>
+          According to regular ICE procedures <xref target="rfc5245bis"/>, 
+          in order for candidate pairing 
+          to be possible and for duplicate candidates to be pruned, the 
+          candidates would need to be provided in the relevant ICE descriptions.
+          By contrast, under Trickle ICE check lists can be empty until 
+          candidates are conveyed or received. Therefore Trickle ICE agents 
+          handle check list formation and candidate pairing in a slightly different
+          way than regular ICE agents: the agents still form the check lists, but 
+          they populate a given check list only after they actually have candidate 
+          pairs for that check list. Every check list is initially placed in the 
+          Running state, even if the check list is empty. An agent then begins 
+          connectivity checks (which includes changing the state of some candidate 
+          pairs from Frozen to Waiting) as defined in Section 6.1.2.6 of 
+          <xref target="rfc5245bis"/>.
+        </t>
+        <t>
+          With regard to pruning of duplicate candidate pairs, a Trickle ICE
+          agent SHOULD follow a policy of keeping the higher priority
+          candidate unless it is peer reflexive.
+        </t>
+      </section>
       <section title='Scheduling Checks' anchor='checks-sched'>
         <t>
           As specified in <xref target='rfc5245bis'/>, whenever timer 
           Ta fires, only check lists in the Running state will be picked 
-          in order to check for candidate pairs for which connectivity 
-          checks are scheduled.
+          in order to check the scheduling of connectivity checks for
+          candidate pairs.
         </t>
         <t>
           Therefore, a Trickle ICE agent MUST keep each check list in 
-          the Running state as long as it expects to use pairs to be 
+          the Running state as long as it expects candidate pairs to be 
           incrementally added to the check list. After that, the check 
           list state is set according to the procedures in
           <xref target='rfc5245bis'/>.
@@ -449,68 +411,62 @@
       </section>
       <section title='Empty Check Lists' anchor='checks-empty'>
         <t>
-          A Trickle ICE agent might create a check list that initially does not 
-          contain any candidate pairs because they will be incrementally added 
-          as they are trickled (this scenario does not arise with non-trickle 
-          agents, because all candidate pairs are known when the agent creates 
-          the check list set) . Such a check list is referred to as an "empty 
-          check list". Similar to other check lists, the state of an empty
-          check list is initially set to Running, in accordance with the ICE 
-          specification <xref target='rfc5245bis'/>, Section 6.1.2.1.
+          The state of an empty check list is initially set to Running, 
+          in accordance with Section 6.1.2.1 of <xref target='rfc5245bis'/>.
         </t>
         <t>
           Whenever timer Ta fires, and an empty check list is picked, no action 
           is performed for the list. Without waiting for timer Ta to expire 
           again, the agent selects the next check list in the Running state, 
-          in accordance with the ICE specification <xref target='rfc5245bis'/>, 
-          Section 6.1.4.2.
+          in accordance with Section 6.1.4.2 of <xref target='rfc5245bis'/>.
         </t>
         <t>
-          In accordance with <xref target='cand-insert'/>, when inserting a 
-          new candidate pair into an empty check list, the agent sets the pair 
-          to a state of Waiting.
+          In accordance with the rules defined in <xref target='cand-insert'/>, 
+          when inserting a new candidate pair into an empty check list, the agent 
+          sets the pair to a state of Waiting or Frozen as appropriate.
         </t>
       </section>
       <section title='Setting Check List State to Failed' anchor='checks-failed'>
-      <t>
-        The ICE specification <xref target='rfc5245bis'/>, Section 7.2.5.3.3, 
-        requires that agents update check lists and timer states upon 
-        completing a connectivity check transaction. During such an 
-        update, regular ICE agents would set the state of a check list 
-        to Failed if both of the following two conditions are satisfied:
-      </t>
-      <t>
-        <list style="symbols">
-          <t>
-            all of the pairs in the check list are either in the
-            Failed state or Succeeded state; and
-          </t>
-          <t>
-            there is not a pair in the valid list for each component 
-            of the media stream.
-          </t>
-        </list>
-      </t>
-      <t>
-        With Trickle ICE, the above situation would often occur when
-        candidate gathering and trickling are still in progress, even
-        though it is quite possible that future checks will succeed. For
-        this reason, Trickle ICE agents add the following conditions to
-        the above list:
-      </t>
-      <t>
-        <list style="symbols">
-          <t>
-            all candidate gathering has completed and the agent
-            is not expecting to discover any new local candidates;
-          </t>
-          <t>
-            the remote agent has conveyed an end-of-candidates indication
-            for that check list as described in
-            <xref target="end-of-candidates"/>.
-          </t>
-        </list>
-      </t>
+        <t>
+          Section 7.2.5.3.3 of <xref target='rfc5245bis'/>
+          requires that agents update check lists and timer states upon 
+          completing a connectivity check transaction. During such an 
+          update, regular ICE agents would set the state of a check list 
+          to Failed if both of the following two conditions are satisfied:
+        </t>
+        <t>
+          <list style="symbols">
+            <t>
+              all of the pairs in the check list are either in the
+              Failed state or Succeeded state; and
+            </t>
+            <t>
+              there is not a pair in the valid list for each component 
+              of the data stream.
+            </t>
+          </list>
+        </t>
+        <t>
+          With Trickle ICE, the above situation would often occur when
+          candidate gathering and trickling are still in progress, even
+          though it is quite possible that future checks will succeed. For
+          this reason, Trickle ICE agents add the following conditions to
+          the above list:
+        </t>
+        <t>
+          <list style="symbols">
+            <t>
+              all candidate gathering has completed and the agent
+              is not expecting to discover any new local candidates; and
+            </t>
+            <t>
+              the remote agent has conveyed an end-of-candidates indication
+              for that check list as described in
+              <xref target="end-of-candidates"/>.
+            </t>
+          </list>
+        </t>
+      </section>
     </section>
     <section title='Discovering and Conveying Additional Local Candidates'
              anchor="send-trickling">
@@ -519,7 +475,7 @@
         likely continue discovering new local candidates as STUN, TURN,
         and other non-host candidate gathering mechanisms begin to
         yield results. Whenever an agent discovers such a new candidate
-        it will compute its priority, type, foundation and component ID
+        it will compute its priority, type, foundation, and component ID
         according to regular ICE procedures.
       </t>
       <t>
@@ -640,51 +596,50 @@
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  F   |  F   |  F   |      |      |
+| s1 (Audio.RTP)  |  F   |  F   |  F   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  F   |  F   |  F   |  F   |      |
+| s2 (Audio.RTCP) |  F   |  F   |  F   |  F   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  F   |      |      |      |      |
+| s3 (Video.RTP)  |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  F   |      |      |      |      |
+| s4 (Video.RTCP) |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
-            Each row in the table represents a component for a given media
-            stream (e.g., m1 and m2 might be the RTP and RTCP components
-            for audio). Each column represents one foundation. Each cell 
-            represents one candidate pair. In the foregoing table, "F" stands 
-            for "frozen"; in the tables below, "W" stands for "waiting" and
-            "S" stands for "succeeded"; in addition, "^^" is used to notate 
-            newly-added candidate pairs.
+            Each row in the table represents a component for a given data
+            stream (e.g., s1 and s2 might be the RTP and RTCP components
+            for audio) and thus a single check list in the check list set. 
+            Each column represents one foundation. Each cell represents one 
+            candidate pair. In the tables shown in this section, "F" stands 
+            for "frozen", "W" stands for "waiting", and "S" stands for 
+            "succeeded"; in addition, "^^" is used to notate newly-added 
+            candidate pairs.
           </t>
           <t>
-            When an agent commences ICE processing,
-            in accordance with Section 6.1.2.6 of
-            <xref target="rfc5245bis"/> 
-            it will unfreeze (i.e., place in the Waiting 
-            state) the topmost candidate pair in every column (i.e., the
-            pair with the lowest component ID).  This state is shown in
-            the following table, with candidate pairs in the Waiting state
-            marked by "W".
+            When an agent commences ICE processing, in accordance with 
+            Section 6.1.2.6 of <xref target="rfc5245bis"/>, for each 
+            foundation it will unfreeze the pair with the lowest component 
+            ID and, if the component IDs are equal, with the highest priority 
+            (this is the topmost candidate pair in every column).
+            This initial state is shown in the following table.
           </t>
           <t>
-            <figure title="Initial Check List State" anchor="fig-checklist-1">
+            <figure title="Initial Check List State" anchor="fig-checklist-initial">
               <artwork>
 <![CDATA[
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  W   |  W   |  W   |      |      |
+| s1 (Audio.RTP)  |  W   |  W   |  W   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  F   |  F   |  F   |  W   |      |
+| s2 (Audio.RTCP) |  F   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  F   |      |      |      |      |
+| s3 (Video.RTP)  |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  F   |      |      |      |      |
+| s4 (Video.RTCP) |  F   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
@@ -694,33 +649,33 @@
             Then, as the checks proceed (see Section 7.2.5.4 of
             <xref target="rfc5245bis"/>), for each pair 
             that enters the Succeeded state (denoted here by "S"),
-            the agent will unfreeze all pairs for all media streams with the same
+            the agent will unfreeze all pairs for all data streams with the same
             foundation (e.g., if the pair in column 1, row 1 succeeds then
             the agent will unfreeze the pair in column 1, rows 2, 3, and 4). 
           </t>
           <t>
-            <figure title="Check List State with Unfrozen Media Stream" anchor="fig-checklist-3">
+            <figure title="Check List State with Succeeded Candidate Pair" anchor="fig-checklist-succeeded">
               <artwork>
 <![CDATA[
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      |      |
+| s1 (Audio.RTP)  |  S   |  W   |  W   |      |      |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
+| s2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      |      |
+| s3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      |      |
+| s4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
-            Trickle ICE preserves all of these rules as they apply to what we might 
-            call "static" check list sets. This implies that if, for 
-            some reason, a Trickle agent were to begin connectivity checks with all 
+            Trickle ICE preserves all of these rules as they apply to 
+            "static" check list sets. This implies that if 
+            a Trickle ICE agent were to begin connectivity checks with all 
             of its pairs already present, the way that pair states change 
             is indistinguishable from that of a regular ICE agent. 
           </t>
@@ -731,82 +686,81 @@
             agent sets the state of the newly formed pair as described below.
           </t>
           <t>
-            Case 1: If the newly formed pair is the topmost pair in its column (i.e.
-            the topmost pair among all the check lists for this foundation), set 
-            the state to Waiting (e.g., this would be the case if the newly formed pair 
-            were placed in column 5, row 1).
+            Rule 1: If the newly formed pair has the lowest component ID and, 
+            if the component IDs are equal, the highest priority of any candidate 
+            pair for this foundation (i.e., if it is the topmost pair in the 
+            column), set the state to Waiting. For example, this would be the 
+            case if the newly formed pair were placed in column 5, row 1. This 
+            rule is consistent with Section 6.1.2.6 of <xref target="rfc5245bis"/>.
           </t>
           <t>
-            <figure title="Check List State with Newly Formed Pair, Case 1" anchor="fig-checklist-4">
+            <figure title="Check List State with Newly Formed Pair, Rule 1" anchor="fig-checklist-rule1">
               <artwork>
 <![CDATA[
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      | ^W^  |
+| s1 (Audio.RTP)  |  S   |  W   |  W   |      | ^W^  |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
+| s2 (Audio.RTCP) |  W   |  F   |  F   |  W   |      |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      |      |
+| s3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      |      |
+| s4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t> 
-            Case 2: If the pair immediately above the newly formed pair in its column 
-            is in the Succeeded state, set the state to Waiting (e.g., this would be 
-            the case if the pair in column 5, row 1 succeeded and the newly formed pair 
-            were placed in column 5, row 2);
+            Rule 2: If there is at least one pair in the Succeeded state for 
+            this foundation, set the state to Waiting. For example, this would be 
+            the case if the pair in column 5, row 1 succeeded and the newly formed 
+            pair were placed in column 5, row 2. This rule is consistent with 
+            Section 7.2.5.3.3 of <xref target="rfc5245bis"/>.
           </t>
           <t>
-            <figure title="Check List State with Newly Formed Pair, Case 2" anchor="fig-checklist-5">
+            <figure title="Check List State with Newly Formed Pair, Rule 2" anchor="fig-checklist-rule2">
               <artwork>
 <![CDATA[
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
+| s1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   | ^W^  |
+| s2 (Audio.RTCP) |  W   |  F   |  F   |  W   | ^W^  |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      |      |
+| s3 (Video.RTP)  |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      |      |
+| s4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
           </t>
           <t>
-            Case 3: If there is at least one Succeeded pair in its column above the 
-            row of the newly formed pair, set the state to Waiting (e.g., this would 
-            be the case if the pair in column 5, row 1 succeeded and two newly formed 
-            pairs were placed in column 5, rows 3 and 4).
+            Rule 3: In all other cases, set the state to Frozen. For example, 
+            this would be the case if the newly formed pair were placed in
+            column 3, row 3.
           </t>
           <t>
-            <figure title="Check List State with Newly Formed Pair, Case 3" anchor="fig-checklist-6">
+            <figure title="Check List State with Newly Formed Pair, Rule 3" anchor="fig-checklist-rule3">
               <artwork>
 <![CDATA[
 +-----------------+------+------+------+------+------+
 |                 |  f1  |  f2  |  f3  |  f4  |  f5  |
 +-----------------+------+------+------+------+------+
-| m1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
+| s1 (Audio.RTP)  |  S   |  W   |  W   |      |  S   |
 +-----------------+------+------+------+------+------+
-| m2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
+| s2 (Audio.RTCP) |  W   |  F   |  F   |  W   |  W   |
 +-----------------+------+------+------+------+------+
-| m3 (Video.RTP)  |  W   |      |      |      | ^W^  |
+| s3 (Video.RTP)  |  W   |      | ^F^  |      |      |
 +-----------------+------+------+------+------+------+
-| m4 (Video.RTCP) |  W   |      |      |      | ^W^  |
+| s4 (Video.RTCP) |  W   |      |      |      |      |
 +-----------------+------+------+------+------+------+
 ]]>
               </artwork>
             </figure>
-          </t>
-          <t>
-            Case 4: In all other cases, set the state to Frozen.
           </t>
         </section>
       </section>
@@ -814,7 +768,7 @@
              anchor="end-of-candidates">
       <t>
         Once all candidate gathering is completed or expires for an
-        ICE session associated with a specific media stream, the agent will generate an
+        ICE session associated with a specific data stream, the agent will generate an
         "end-of-candidates" indication for that session and convey it to
         the remote agent via the signaling channel. Although the exact form of
         the indication depends on the application protocol, the indication
@@ -837,7 +791,7 @@
         <list style='symbols'>
           <t>
             A controlled Trickle ICE agent SHOULD convey an end-of-candidates 
-            indication after it has completed gathering for a media stream, 
+            indication after it has completed gathering for a data stream, 
             unless ICE processing terminates before the agent has had a chance 
             to complete gathering. 
           </t>
@@ -856,12 +810,12 @@
         (rather than as a part of the initial ICE description or a response thereto), 
         it is the responsibility of the
         using protocol to define methods for associating the
-        indication with one or more specific media streams.
+        indication with one or more specific data streams.
       </t>
       <t>
         Receiving an end-of-candidates indication enables an agent to
         update check list states and, in case valid pairs do not exist
-        for every component in every media stream, determine that ICE
+        for every component in every data stream, determine that ICE
         processing has failed. It also enables an agent to speed up the
         conclusion of ICE processing when a candidate pair has been validated
         but it involves the use of lower-preference transports such as
@@ -890,8 +844,8 @@
         in <xref target="checks"/>. Past that point, an
         agent MUST NOT trickle any new candidates within this ICE session. 
         After an agent has received an end-of-candidates indication, it 
-        MUST also ignore any newly received candidates for that media 
-        stream or media session. Therefore, adding new candidates to the 
+        MUST also ignore any newly received candidates for that data 
+        stream or data session. Therefore, adding new candidates to the 
         negotiation is possible only through an ICE restart (see
         <xref target='subsequent'/>).
       </t>
@@ -900,7 +854,7 @@
         override regular ICE semantics for concluding ICE processing.
         Therefore, even if end-of-candidates indications are conveyed,
         an agent will still need to go through pair nomination. Also, if
-        pairs have been nominated for components and media streams, ICE
+        pairs have been nominated for components and data streams, ICE
         processing MAY still conclude even if end-of-candidates
         indications have not been received for all streams. In all cases,
         an agent MUST NOT trickle any new candidates within an ICE session
@@ -936,36 +890,13 @@
              anchor="end-of-candidates.recv">
       <t>
         When an agent receives an end-of-candidates indication
-        for a specific media stream, it will update the state of the 
+        for a specific data stream, it will update the state of the 
         relevant check list as per
         <xref target="checks"/>. If the check list is still 
-        in the Active state after the update, the agent will persist 
+        in the Running state after the update, the agent will persist 
         the fact that an end-of-candidates indication has been
         received and take it into account in future updates
         to the check list.
-      </t>
-    </section>
-    <section title="Trickle ICE and Peer Reflexive Candidates">
-      <t>
-        Even though Trickle ICE does not explicitly modify the
-        procedures for handling peer-reflexive candidates, use of Trickle ICE
-        can have an impact on how they are processed. With Trickle
-        ICE, it is possible that server reflexive candidates can be
-        discovered as peer reflexive in cases where incoming
-        connectivity checks are received from these candidates before
-        the trickle updates that carry them.
-      </t>
-      <t>
-        While this would certainly increase the number of cases where
-        ICE processing nominates and selects candidates discovered as
-        peer-reflexive, it does not require any change in processing.
-      </t>
-      <t>
-        It is also likely that some applications would prefer not to
-        trickle server reflexive candidates to entities that are known
-        to be publicly accessible and where sending a direct STUN
-        binding request is likely to reach the destination faster than
-        the trickle update that travels through the signaling path.
       </t>
     </section>
     <section title='Subsequent Exchanges'
@@ -985,12 +916,12 @@
     <section title='Unilateral Use of Trickle ICE (Half Trickle)'
              anchor="half-trickle">
       <t>
-        In half trickle mode, the initiator conveys the initial ICE description
+        In half trickle, the initiator conveys the initial ICE description
         with a full generation of candidates. This ensures that the
         ICE description can be processed by a regular ICE responder and is mostly
         meant for use in cases where support for Trickle ICE cannot be 
         confirmed prior to conveying the initial ICE description.  The initial ICE description 
-        indicate support for Trickle ICE, which means the responder can
+        indicates support for Trickle ICE, which means the responder can
         respond with something less than a full generation of candidates and then 
         trickle the rest.  The initial ICE description for half trickle would typically contain an
         end-of-candidates indication, although this is not mandatory
@@ -1006,8 +937,7 @@
         ICE agent, while still allowing a Trickle ICE agent to use
         the optimization defined in this specification. This prevents
         negotiation from failing in the former case while still giving
-        roughly half the Trickle ICE benefits in the latter (hence the
-        name of the mechanism).
+        roughly half the Trickle ICE benefits in the latter.
       </t>
       <t>
         Use of half trickle is only necessary during an initial
@@ -1040,6 +970,29 @@
         trickle is most likely to result in an ideal user experience.
         Even so, using half trickle would be an improvement over regular
         ICE because it would result in a better experience for responders.
+      </t>
+    </section>
+    <section title="Trickle ICE and Peer Reflexive Candidates">
+      <t>
+        Even though Trickle ICE does not explicitly modify the
+        procedures for handling peer-reflexive candidates, use of Trickle ICE
+        can have an impact on how they are processed. With Trickle
+        ICE, it is possible that server reflexive candidates can be
+        discovered as peer reflexive in cases where incoming
+        connectivity checks are received from these candidates before
+        the trickle updates that carry them.
+      </t>
+      <t>
+        While this would certainly increase the number of cases where
+        ICE processing nominates and selects candidates discovered as
+        peer-reflexive, it does not require any change in processing.
+      </t>
+      <t>
+        It is also likely that some applications would prefer not to
+        trickle server reflexive candidates to entities that are known
+        to be publicly accessible and where sending a direct STUN
+        binding request is likely to reach the destination faster than
+        the trickle update that travels through the signaling path.
       </t>
     </section>
     <section title='Requirements for Signaling Protocols' anchor="signal">
@@ -1126,12 +1079,6 @@
         prior to the RTP host candidate. Similarly the RTP server
         reflexive candidate would be conveyed together with or prior to the
         RTCP server reflexive candidate.
-      </t>
-      <t>
-        Similar considerations apply at the level of media streams in addition
-        to foundations; this is covered by the requirement to always start
-        unfreezing candidates starting from the first media stream
-        as described under <xref target="check.lists"/>.
       </t>
     </section>
     <section title='IANA Considerations'>
@@ -1247,12 +1194,12 @@
 <author initials='G' surname='Shieh' fullname='Guo-wei Shieh'>
     <organization />
 </author>
-<date month='July' day='3' year='2017' />
+<date month='March' day='1' year='2018' />
 <abstract><t>This document provides information and requirements for how IP addresses should be handled by WebRTC implementations.</t></abstract>
 </front>
-<seriesInfo name='Internet-Draft' value='draft-ietf-rtcweb-ip-handling-04' />
+<seriesInfo name='Internet-Draft' value='draft-ietf-rtcweb-ip-handling-06' />
 <format type='TXT'
-        target='http://www.ietf.org/internet-drafts/draft-ietf-rtcweb-ip-handling-04.txt' />
+        target='http://www.ietf.org/internet-drafts/draft-ietf-rtcweb-ip-handling-06.txt' />
 </reference>
       <reference anchor="XEP-0176">
         <front>
@@ -1323,7 +1270,7 @@
         <list style='empty'>
           <t>
             If there is not a pair in the valid list for each component
-            of the media stream, the state of the check list is set to
+            of the data stream, the state of the check list is set to
             Failed.
           </t>
         </list>
@@ -1358,8 +1305,8 @@
           </t>
         </list>
         At this point the check list only contains Failed candidates and
-        the valid list is empty. This causes the media stream and
-        potentially all ICE processing to fail, even though if trickle agents
+        the valid list is empty. This causes the data stream and
+        potentially all ICE processing to fail, even though if Trickle ICE agents
         could subsequently convey candidates that
         would cause previously empty check lists to become non-empty.
       </t>
@@ -1444,8 +1391,7 @@
            |<--------------------------------------------->|
   peer rflx|                                               |
  cand disco|                                               |
-           |                                               |
-           |<=============== MEDIA FLOWS =================>|
+           |<========== CONNECTION ESTABLISHED ===========>|
 
 ]]>
         </artwork>
@@ -1465,6 +1411,9 @@
         <t>
           <list style='symbols'>
             <t>
+              Simplified the rules for inserting a new pair in a check list.
+            </t>
+            <t>
               Clarified it is not allowed to nominate a candidate 
               pair after a pair has already been nominated (a.k.a. 
               renomination or continuous nomination).
@@ -1479,6 +1428,9 @@
             </t>
             <t>
               Removed the ill-defined concept of stream order.
+            </t>
+            <t>
+              Shortened the introduction.
             </t>
           </list>
         </t>
