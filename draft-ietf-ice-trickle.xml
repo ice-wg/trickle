@@ -1137,12 +1137,12 @@
 <author initials='J' surname='Rosenberg' fullname='Jonathan Rosenberg'>
     <organization />
 </author>
-<date month='February' day='2' year='2018' />
+<date month='March' day='8' year='2018' />
 <abstract><t>This document describes a protocol for Network Address Translator (NAT) traversal for UDP-based multimedia.  This protocol is called Interactive Connectivity Establishment (ICE).  ICE makes use of the Session Traversal Utilities for NAT (STUN) protocol and its extension, Traversal Using Relay NAT (TURN).  This document obsoletes RFC 5245.</t></abstract>
 </front>
-<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-17' />
+<seriesInfo name='Internet-Draft' value='draft-ietf-ice-rfc5245bis-20' />
 <format type='TXT'
-        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-17.txt' />
+        target='http://www.ietf.org/internet-drafts/draft-ietf-ice-rfc5245bis-20.txt' />
 </reference>
 
     </references>
