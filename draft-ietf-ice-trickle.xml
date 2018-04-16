@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-ice-trickle-20'>
+     docName='draft-ietf-ice-trickle-21'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -372,7 +372,7 @@
       <t>
         According to regular ICE procedures <xref target="rfc5245bis"/>, 
         in order for candidate pairing 
-        to be possible and for duplicate candidates to be pruned, the 
+        to be possible and for redundant candidates to be pruned, the 
         candidates would need to be provided in the initial ICE description
         and initial ICE response.
         By contrast, under Trickle ICE check lists can be empty until 
@@ -544,20 +544,24 @@
             base before completing the relevant redundancy tests.
           </t>
           <t>
-            The agent eliminates redundant pairs by following the rules
-            in Section 5.1.3 of <xref target='rfc5245bis'/>, but only
-            checks existing pairs if they have a state of Waiting or Frozen (thus avoiding
-            removal of pairs for which connectivity checks are in flight or
-            for which connectivity checks have already yielded a definitive 
-            result).
+            The agent prunes redundant pairs by following the rules
+            in Section 6.1.2.4 of <xref target='rfc5245bis'/>, but checks
+            existing pairs only if they have a state of Waiting or Frozen;
+            this avoids removal of pairs for which connectivity checks are 
+            in flight (a state of In-Progress) or for which connectivity 
+            checks have already yielded a definitive result (a state of
+            Succeeded or Failed).
           </t>
           <t>
             If after the relevant redundancy tests the check list where the 
             pair is to be added already contains the maximum number of candidate 
             pairs (100 by default as per <xref target="rfc5245bis"/>), the agent
             SHOULD discard any pairs in the Failed state to make room for the 
-            new pair. If there are no such pairs, the agent SHOULD discard the
-            new pair.
+            new pair. If there are no such pairs, the agent SHOULD discard a
+            pair with a lower priority than the new pair in order to make room
+            for the new pair, until the number of pairs is equal to the maximum
+            number of pairs. This processing is consistent with Section 6.1.2.5
+            of <xref target='rfc5245bis'/>.
           </t>
         </list>
       </t>
@@ -586,35 +590,44 @@
             base before completing the redundancy check in the next step.
           </t>
           <t>
-            The agent eliminates redundant pairs by following the rules
-            in Section 5.1.3 of <xref target='rfc5245bis'/>, but only
-            checks existing pairs if they have a state of Waiting or Frozen (thus avoiding
-            removal of pairs for which connectivity checks are in flight or
-            for which connectivity checks have already yielded a definitive 
-            result).
-          </t>
-          <t>
-            If a redundancy is found between two pairs and one of those 
-            pairs contains a newly received remote candidate whose type is
-            peer reflexive, the Trickle ICE agent SHOULD discard the
-            pair containing that candidate, set the priority of the
-            existing pair to the priority of the discarded pair, and
-            re-sort the check list. (This policy helps to eliminate
-            problems with remote peer reflexive candidates for which
-            a STUN binding request is received before signaling of the
-            candidate is trickled to the receiving agent, such as a
-            different view of pair priorities between the local agent
-            and the remote agent, since the same candidate could be
-            perceived as peer reflexive by one agent and as server
-            reflexive by the other agent.)
+            The agent prunes redundant pairs as described below, but checks
+            existing pairs only if they have a state of Waiting or Frozen;
+            this avoids removal of pairs for which connectivity checks are 
+            in flight (a state of In-Progress) or for which connectivity 
+            checks have already yielded a definitive result (a state of
+            Succeeded or Failed).
+            <list style='letters'>
+              <t>
+                If the agent finds a redundancy between two pairs and one of 
+                those pairs contains a newly received remote candidate whose 
+                type is peer reflexive, the agent SHOULD discard the
+                pair containing that candidate, set the priority of the
+                existing pair to the priority of the discarded pair, and
+                re-sort the check list. (This policy helps to eliminate
+                problems with remote peer reflexive candidates for which
+                a STUN binding request is received before signaling of the
+                candidate is trickled to the receiving agent, such as a
+                different view of pair priorities between the local agent
+                and the remote agent, since the same candidate could be
+                perceived as peer reflexive by one agent and as server
+                reflexive by the other agent.)
+              </t>
+              <t>
+                The agent then applies the rules defined in 
+                Section 6.1.2.4 of <xref target='rfc5245bis'/>.
+              </t>
+            </list>
           </t>
           <t>
             If after the relevant redundancy tests the check list where the 
             pair is to be added already contains the maximum number of candidate 
             pairs (100 by default as per <xref target="rfc5245bis"/>), the agent
             SHOULD discard any pairs in the Failed state to make room for the 
-            new pair. If there are no such pairs, the agent SHOULD discard the
-            new pair.
+            new pair. If there are no such pairs, the agent SHOULD discard a
+            pair with a lower priority than the new pair in order to make room
+            for the new pair, until the number of pairs is equal to the maximum
+            number of pairs. This processing is consistent with Section 6.1.2.5
+            of <xref target='rfc5245bis'/>.
           </t>
         </list>
       </t>
@@ -625,7 +638,7 @@
         After a local agent has trickled a candidate and formed a candidate 
         pair from that local candidate (<xref target='trickle-send'/>), or after 
         a remote agent has received a trickled candidate and formed a candidate 
-        pair from the remote candidate (<xref target='trickle-recv'/>), a Trickle 
+        pair from that remote candidate (<xref target='trickle-recv'/>), a Trickle 
         ICE agent adds the new candidate pair to a check list as defined in 
         this section.
       </t>
@@ -1414,6 +1427,18 @@
         Note to the RFC Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes from draft-ietf-ice-trickle-20'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Slight corrections to hanlding of peer reflexive candidates. 
+            </t>
+            <t>
+              Wordsmithing in a few sections.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes from draft-ietf-ice-trickle-19'>
         <t>
           <list style='symbols'>
