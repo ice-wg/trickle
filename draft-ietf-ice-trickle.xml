@@ -608,7 +608,7 @@
                 a STUN binding request is received before signaling of the
                 candidate is trickled to the receiving agent, such as a
                 different view of pair priorities between the local agent
-                and the remote agent, since the same candidate could be
+                and the remote agent, because the same candidate could be
                 perceived as peer reflexive by one agent and as server
                 reflexive by the other agent.)
               </t>
